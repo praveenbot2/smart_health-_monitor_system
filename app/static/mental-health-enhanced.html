@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Health - Smart Health Monitor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: var(--serif-font-body, "Source Sans Pro", "Segoe UI", Arial, sans-serif);
+            background: linear-gradient(135deg, rgba(5, 22, 48, 0.55) 0%, rgba(7, 51, 99, 0.32) 52%, rgba(8, 15, 36, 0.5) 100%), url('/static/images/module-bg.avif');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.84);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            backdrop-filter: blur(4px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6ec4 0%, #ff758c 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .section {
+            background: #f9f9f9;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .slider-group {
+            margin-bottom: 2rem;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .slider-label span:first-child {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .slider-label .value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #ff6ec4;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: linear-gradient(to right, #4caf50, #ffeb3b, #f44336);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            border: none;
+        }
+
+        .symptoms-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .checkbox-item:hover {
+            background: #f0f0f0;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #ff6ec4;
+        }
+
+        textarea::placeholder {
+            color: #aaa;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #ff6ec4 0%, #ff758c 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 110, 196, 0.4);
+        }
+
+        .score-card {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .score-circle {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6ec4 0%, #ff758c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 30px rgba(255, 110, 196, 0.3);
+        }
+
+        .score-value {
+            font-size: 4rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .score-label {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .trend-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .trend-badge.improving {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .trend-badge.stable {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .trend-badge.declining {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 10px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ff6ec4;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .ai-advice {
+            background: linear-gradient(135deg, #fff1e6 0%, #ffe5b4 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #ff6ec4;
+        }
+
+        .ai-advice h3 {
+            color: #d2691e;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .ai-advice-content {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .ai-advice-tips {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .ai-advice-tips li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .ai-advice-tips li:before {
+            content: "💡";
+            position: absolute;
+            left: 0;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            padding: 0.8rem 1.5rem;
+            background: white;
+            color: #ff6ec4;
+            border: 2px solid #ff6ec4;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .back-btn:hover {
+            background: #ff6ec4;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .symptoms-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="/static/css/serif-design-system.css">
+    <script defer src="/static/js/advanced-utilities.js"></script>
+</head>
+<body>
+    <button class="back-btn" onclick="window.location.href='/dashboard'">← Back to Dashboard</button>
+
+    <div class="container">
+        <div class="header">
+            <h1>🧠 Mental Health</h1>
+            <p>Track your mood, stress levels, and mental wellness</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Left Section: Check-In Form -->
+            <div class="section">
+                <h2>Today's Mental Health Check-In</h2>
+                
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>😊 Mood</span>
+                        <span class="value" id="moodValue">5/10</span>
+                    </div>
+                    <input type="range" id="moodSlider" min="1" max="10" value="5" 
+                           oninput="updateSliderValue('mood', this.value)">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>🔥 Stress Level</span>
+                        <span class="value" id="stressValue">5/10</span>
+                    </div>
+                    <input type="range" id="stressSlider" min="1" max="10" value="5"
+                           oninput="updateSliderValue('stress', this.value)">
+                </div>
+
+                <h3 style="margin: 1.5rem 0 1rem 0; color: #555; font-size: 1.1rem;">Common Symptoms</h3>
+                <div class="symptoms-grid">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="anxiety" name="symptom">
+                        <label for="anxiety">Anxiety</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="insomnia" name="symptom">
+                        <label for="insomnia">Insomnia</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="fatigue" name="symptom">
+                        <label for="fatigue">Fatigue</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="mood_swings" name="symptom">
+                        <label for="mood_swings">Mood Swings</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="irritability" name="symptom">
+                        <label for="irritability">Irritability</label>
+                    </div>
+                </div>
+
+                <h3 style="margin: 1.5rem 0 0.5rem 0; color: #555; font-size: 1.1rem;">Additional Notes</h3>
+                <textarea id="notes" placeholder="Share anything else on your mind..."></textarea>
+
+                <button class="btn" onclick="logMentalHealthEntry()">Log Mental Health Entry</button>
+            </div>
+
+            <!-- Right Section: Statistics and AI Advice -->
+            <div>
+                <div class="section">
+                    <h2>This Week's Mental Score</h2>
+                    <div class="score-card">
+                        <div class="score-circle">
+                            <div class="score-value" id="mentalScore">--</div>
+                        </div>
+                        <div class="score-label">Weekly Mental Health Score</div>
+                        <span class="trend-badge" id="trendBadge">Loading...</span>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="entriesLogged">--</div>
+                            <div class="stat-label">Entries Logged</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="avgMood">--</div>
+                            <div class="stat-label">Avg Mood</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="avgStress">--</div>
+                            <div class="stat-label">Avg Stress</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section ai-advice">
+                    <h3>🤖 AI Advice</h3>
+                    <h4 style="color: #d2691e; font-size: 1rem; margin-bottom: 0.5rem;">Your Personalized Advice</h4>
+                    <div class="ai-advice-content" id="aiAdviceContent">
+                        <p>Loading personalized advice...</p>
+                    </div>
+                    <ul class="ai-advice-tips" id="aiAdviceTips"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update slider value displays
+        function updateSliderValue(type, value) {
+            if (type === 'mood') {
+                document.getElementById('moodValue').textContent = value + '/10';
+            } else if (type === 'stress') {
+                document.getElementById('stressValue').textContent = value + '/10';
+            }
+        }
+
+        // Load statistics and AI advice on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            loadStatistics();
+            loadAIAdvice();
+        });
+
+        // Load mental health statistics
+        async function loadStatistics() {
+            try {
+                const response = await fetch('/api/mental-health/statistics?days=7');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const stats = data.statistics;
+                    
+                    // Update score
+                    document.getElementById('mentalScore').textContent = stats.mental_score || '--';
+                    
+                    // Update trend badge
+                    const trendBadge = document.getElementById('trendBadge');
+                    trendBadge.textContent = stats.trend.charAt(0).toUpperCase() + stats.trend.slice(1);
+                    trendBadge.className = 'trend-badge ' + stats.trend;
+                    
+                    // Update stats
+                    document.getElementById('entriesLogged').textContent = stats.entries_logged || 0;
+                    document.getElementById('avgMood').textContent = stats.avg_mood || '--';
+                    document.getElementById('avgStress').textContent = stats.avg_stress || '--';
+                } else {
+                    console.error('Failed to load statistics:', data.error);
+                }
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+            }
+        }
+
+        // Load AI advice
+        async function loadAIAdvice() {
+            try {
+                const response = await fetch('/api/mental-health/ai-advice', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                
+                if (data.success && data.advice) {
+                    document.getElementById('aiAdviceContent').innerHTML = 
+                        '<p>' + data.advice.message + '</p>';
+                    
+                    const tipsList = document.getElementById('aiAdviceTips');
+                    tipsList.innerHTML = '';
+                    data.advice.tips.forEach(tip => {
+                        const li = document.createElement('li');
+                        li.textContent = tip;
+                        tipsList.appendChild(li);
+                    });
+                } else {
+                    document.getElementById('aiAdviceContent').innerHTML = 
+                        '<p>Unable to load personalized advice at this time.</p>';
+                }
+            } catch (error) {
+                console.error('Error loading AI advice:', error);
+                document.getElementById('aiAdviceContent').innerHTML = 
+                    '<p>Unable to load personalized advice at this time.</p>';
+            }
+        }
+
+        // Log mental health entry
+        async function logMentalHealthEntry() {
+            const mood = parseInt(document.getElementById('moodSlider').value);
+            const stress = parseInt(document.getElementById('stressSlider').value);
+            const notes = document.getElementById('notes').value;
+            
+            // Get symptoms
+            const symptoms = {
+                has_anxiety: document.getElementById('anxiety').checked,
+                has_insomnia: document.getElementById('insomnia').checked,
+                has_fatigue: document.getElementById('fatigue').checked,
+                has_mood_swings: document.getElementById('mood_swings').checked,
+                has_irritability: document.getElementById('irritability').checked
+            };
+
+            const data = {
+                mood_score: mood,
+                stress_level: stress,
+                notes: notes,
+                ...symptoms
+            };
+
+            try {
+                const response = await fetch('/api/mental-health/entry', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('✅ Mental health entry logged successfully!');
+                    
+                    // Reset form
+                    document.getElementById('moodSlider').value = 5;
+                    document.getElementById('stressSlider').value = 5;
+                    updateSliderValue('mood', 5);
+                    updateSliderValue('stress', 5);
+                    document.getElementById('notes').value = '';
+                    document.querySelectorAll('input[name="symptom"]').forEach(cb => cb.checked = false);
+                    
+                    // Reload statistics and advice
+                    loadStatistics();
+                    loadAIAdvice();
+                } else {
+                    alert('❌ Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error logging entry:', error);
+                alert('❌ Failed to log mental health entry. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>

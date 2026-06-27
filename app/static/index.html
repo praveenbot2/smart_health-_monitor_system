@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Health Monitor System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--serif-font-body, "Source Sans Pro", "Segoe UI", Arial, sans-serif);
+            background: var(--serif-accent, #FF006E);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: var(--serif-accent, #FF006E);
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .auth-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--serif-accent, #FF006E);
+        }
+        
+        button {
+            background: var(--serif-accent, #FF006E);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #5568d3;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            margin-left: 10px;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .card h3 {
+            color: var(--serif-accent, #FF006E);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .vital-display {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .vital-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .vital-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .vital-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--serif-accent, #FF006E);
+        }
+        
+        .vital-unit {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .alert-box {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .user-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .health-score {
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .score-excellent { color: #28a745; }
+        .score-good { color: #17a2b8; }
+        .score-fair { color: #ffc107; }
+        .score-poor { color: #dc3545; }
+        
+        .risk-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        
+        .risk-low { background: #d4edda; color: #155724; }
+        .risk-medium { background: #fff3cd; color: #856404; }
+        .risk-high { background: #f8d7da; color: #721c24; }
+        
+        .chat-box {
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            height: 300px;
+            overflow-y: auto;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #f8f9fa;
+        }
+        
+        .chat-message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .chat-user {
+            background: var(--serif-accent, #FF006E);
+            color: white;
+            margin-left: 20%;
+        }
+        
+        .chat-bot {
+            background: white;
+            margin-right: 20%;
+        }
+        
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid var(--serif-accent, #FF006E);
+            border-radius: 5px;
+            cursor: pointer;
+            color: var(--serif-accent, #FF006E);
+            font-weight: 500;
+        }
+        
+        .tab.active {
+            background: var(--serif-accent, #FF006E);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .test-credentials {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ffc107;
+            margin-top: 15px;
+        }
+        
+        .test-credentials h4 {
+            margin-bottom: 10px;
+            color: #856404;
+        }
+        
+        .test-credentials code {
+            background: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+    </style>
+    <link rel="stylesheet" href="/static/css/serif-design-system.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏥 Smart Health Monitor System</h1>
+            <p class="subtitle">Comprehensive Health Monitoring & AI-Powered Risk Assessment</p>
+        </header>
+
+        <!-- Login/Register Section -->
+        <div id="authSection" class="auth-section">
+            <h2>Login to Your Account</h2>
+            <div id="authMessage"></div>
+            
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" placeholder="Enter username">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" placeholder="Enter password">
+            </div>
+            
+            <button onclick="login()">Login</button>
+            
+            <div class="test-credentials">
+                <h4>🔑 Test Credentials</h4>
+                <p><strong>Patient:</strong> <code>patient1</code> / <code>patient123</code></p>
+                <p><strong>Doctor:</strong> <code>dr_smith</code> / <code>doctor123</code></p>
+                <p><strong>Admin:</strong> <code>admin</code> / <code>admin123</code></p>
+            </div>
+        </div>
+
+        <!-- Dashboard Section (Hidden until login) -->
+        <div id="dashboardSection" class="hidden">
+            <div class="auth-section">
+                <div class="user-info" id="userInfo"></div>
+                <button class="btn-danger" onclick="logout()">Logout</button>
+            </div>
+
+            <div class="tab-container">
+                <div class="tab active" onclick="switchTab('vitals')">📊 Vital Signs</div>
+                <div class="tab" onclick="switchTab('health')">❤️ Health Score</div>
+                <div class="tab" onclick="switchTab('prediction')">🤖 AI Prediction</div>
+                <div class="tab" onclick="switchTab('chatbot')">💬 AI Assistant</div>
+                <div class="tab" onclick="switchTab('doctors')">👨‍⚕️ Doctors</div>
+            </div>
+
+            <!-- Vital Signs Tab -->
+            <div id="vitalsTab" class="tab-content active">
+                <div class="dashboard">
+                    <div class="card">
+                        <h3>📝 Record Vital Signs</h3>
+                        <div class="form-group">
+                            <label>Heart Rate (BPM):</label>
+                            <input type="number" id="heartRate" placeholder="60-100" min="40" max="200">
+                        </div>
+                        <div class="form-group">
+                            <label>Blood Pressure Systolic:</label>
+                            <input type="number" id="bpSystolic" placeholder="90-120" min="70" max="200">
+                        </div>
+                        <div class="form-group">
+                            <label>Blood Pressure Diastolic:</label>
+                            <input type="number" id="bpDiastolic" placeholder="60-80" min="40" max="120">
+                        </div>
+                        <div class="form-group">
+                            <label>Oxygen Level (%):</label>
+                            <input type="number" id="oxygen" placeholder="95-100" min="80" max="100" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>Temperature (°C):</label>
+                            <input type="number" id="temperature" placeholder="36.1-37.2" min="35" max="42" step="0.1">
+                        </div>
+                        <button onclick="recordVitals()">Record Vitals</button>
+                        <button class="btn-secondary" onclick="simulateIoT()">Simulate IoT Data</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>📈 Latest Vital Signs</h3>
+                        <div id="latestVitals">
+                            <p style="color: #999; text-align: center;">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Score Tab -->
+            <div id="healthTab" class="tab-content">
+                <div class="dashboard">
+                    <div class="card">
+                        <h3>💯 Health Score</h3>
+                        <button onclick="calculateHealthScore()">Calculate My Health Score</button>
+                        <div id="healthScoreDisplay"></div>
+                    </div>
+
+                    <div class="card">
+                        <h3>📊 Health Trends</h3>
+                        <div id="healthTrends"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Prediction Tab -->
+            <div id="predictionTab" class="tab-content">
+                <div class="dashboard">
+                    <div class="card">
+                        <h3>🤖 AI Health Risk Prediction</h3>
+                        <button onclick="predictHealthRisk()">Analyze My Health Risk</button>
+                        <div id="predictionDisplay"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chatbot Tab -->
+            <div id="chatbotTab" class="tab-content">
+                <div class="card">
+                    <h3>💬 AI Health Assistant</h3>
+                    <div class="chat-box" id="chatBox"></div>
+                    <div class="form-group">
+                        <textarea id="chatMessage" rows="3" placeholder="Ask me about your health..."></textarea>
+                    </div>
+                    <button onclick="sendChatMessage()">Send</button>
+                </div>
+            </div>
+
+            <!-- Doctors Tab -->
+            <div id="doctorsTab" class="tab-content">
+                <div class="dashboard">
+                    <div class="card">
+                        <h3>👨‍⚕️ Recommended Doctors</h3>
+                        <button onclick="getRecommendedDoctors()">Get Recommendations</button>
+                        <div id="doctorsList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '';
+        let currentUser = null;
+
+        // Login function
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                showAuthMessage('Please enter username and password', 'danger');
+                return;
+            }
+
+            try {
+                const response = await fetch(API_BASE + '/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    currentUser = data.user;
+                    showAuthMessage('Login successful!', 'success');
+                    setTimeout(() => {
+                        document.getElementById('authSection').classList.add('hidden');
+                        document.getElementById('dashboardSection').classList.remove('hidden');
+                        updateUserInfo();
+                        loadLatestVitals();
+                    }, 500);
+                } else {
+                    showAuthMessage(data.error || 'Login failed', 'danger');
+                }
+            } catch (error) {
+                showAuthMessage('Connection error: ' + error.message, 'danger');
+            }
+        }
+
+        // Logout function
+        async function logout() {
+            try {
+                await fetch(API_BASE + '/api/auth/logout', { method: 'POST' });
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+            
+            currentUser = null;
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('dashboardSection').classList.add('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        // Update user info display
+        function updateUserInfo() {
+            const userInfoEl = document.getElementById('userInfo');
+            userInfoEl.innerHTML = `
+                <p><strong>Welcome, ${currentUser.full_name}!</strong></p>
+                <p>Role: <span class="risk-badge">${currentUser.role.toUpperCase()}</span></p>
+                <p>Email: ${currentUser.email || 'Not set'}</p>
+            `;
+        }
+
+        // Show auth message
+        function showAuthMessage(message, type) {
+            const messageEl = document.getElementById('authMessage');
+            messageEl.innerHTML = `<div class="alert-box alert-${type}">${message}</div>`;
+            setTimeout(() => { messageEl.innerHTML = ''; }, 5000);
+        }
+
+        // Record vital signs
+        async function recordVitals() {
+            const vitals = {
+                heart_rate: parseFloat(document.getElementById('heartRate').value),
+                blood_pressure_systolic: parseFloat(document.getElementById('bpSystolic').value),
+                blood_pressure_diastolic: parseFloat(document.getElementById('bpDiastolic').value),
+                oxygen_level: parseFloat(document.getElementById('oxygen').value),
+                temperature: parseFloat(document.getElementById('temperature').value)
+            };
+
+            if (Object.values(vitals).some(v => !v || isNaN(v))) {
+                alert('Please fill in all vital signs');
+                return;
+            }
+
+            try {
+                const response = await fetch(API_BASE + '/api/vitals/record', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(vitals)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Vital signs recorded successfully!');
+                    loadLatestVitals();
+                    clearVitalInputs();
+                } else {
+                    alert(data.error || 'Failed to record vitals');
+                }
+            } catch (error) {
+                alert('Connection error: ' + error.message);
+            }
+        }
+
+        // Simulate IoT data
+        async function simulateIoT() {
+            try {
+                const response = await fetch(API_BASE + '/api/vitals/simulate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('IoT data simulated successfully!');
+                    loadLatestVitals();
+                } else {
+                    alert(data.error || 'Failed to simulate data');
+                }
+            } catch (error) {
+                alert('Connection error: ' + error.message);
+            }
+        }
+
+        // Load latest vitals
+        async function loadLatestVitals() {
+            try {
+                const response = await fetch(API_BASE + '/api/vitals/latest');
+                const data = await response.json();
+
+                if (response.ok && data.vital) {
+                    const vital = data.vital;
+                    document.getElementById('latestVitals').innerHTML = `
+                        <div class="vital-display">
+                            <div class="vital-item">
+                                <div class="vital-label">Heart Rate</div>
+                                <div class="vital-value">${vital.heart_rate}</div>
+                                <div class="vital-unit">BPM</div>
+                            </div>
+                            <div class="vital-item">
+                                <div class="vital-label">Blood Pressure</div>
+                                <div class="vital-value">${vital.blood_pressure_systolic}/${vital.blood_pressure_diastolic}</div>
+                                <div class="vital-unit">mmHg</div>
+                            </div>
+                            <div class="vital-item">
+                                <div class="vital-label">Oxygen</div>
+                                <div class="vital-value">${vital.oxygen_level}</div>
+                                <div class="vital-unit">%</div>
+                            </div>
+                            <div class="vital-item">
+                                <div class="vital-label">Temperature</div>
+                                <div class="vital-value">${vital.temperature}</div>
+                                <div class="vital-unit">°C</div>
+                            </div>
+                        </div>
+                        <p style="text-align: center; color: #999; margin-top: 10px; font-size: 12px;">
+                            Recorded: ${new Date(vital.recorded_at).toLocaleString()}
+                        </p>
+                    `;
+                } else {
+                    document.getElementById('latestVitals').innerHTML = '<p style="text-align: center; color: #999;">No vitals recorded yet</p>';
+                }
+            } catch (error) {
+                console.error('Error loading vitals:', error);
+            }
+        }
+
+        // Clear vital inputs
+        function clearVitalInputs() {
+            document.getElementById('heartRate').value = '';
+            document.getElementById('bpSystolic').value = '';
+            document.getElementById('bpDiastolic').value = '';
+            document.getElementById('oxygen').value = '';
+            document.getElementById('temperature').value = '';
+        }
+
+        // Calculate health score
+        async function calculateHealthScore() {
+            try {
+                const response = await fetch(API_BASE + '/api/health-score/calculate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const score = data.health_score.overall_score;
+                    let scoreClass = 'score-poor';
+                    if (score >= 80) scoreClass = 'score-excellent';
+                    else if (score >= 60) scoreClass = 'score-good';
+                    else if (score >= 40) scoreClass = 'score-fair';
+
+                    document.getElementById('healthScoreDisplay').innerHTML = `
+                        <div class="health-score ${scoreClass}">${score.toFixed(1)}/100</div>
+                        <p style="text-align: center"><span class="risk-badge">${data.health_score.trend}</span></p>
+                    `;
+                } else {
+                    document.getElementById('healthScoreDisplay').innerHTML = `<p class="alert-box alert-danger">${data.error || 'Failed to calculate health score. Please record vitals first.'}</p>`;
+                }
+            } catch (error) {
+                alert('Connection error: ' + error.message);
+            }
+        }
+
+        // Predict health risk
+        async function predictHealthRisk() {
+            try {
+                const response = await fetch(API_BASE + '/api/predictions/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const pred = data.prediction;
+                    const riskClass = 'risk-' + pred.risk_level.toLowerCase();
+                    
+                    document.getElementById('predictionDisplay').innerHTML = `
+                        <div style="text-align: center; margin: 20px 0;">
+                            <h2 class="risk-badge ${riskClass}" style="font-size: 24px; padding: 15px 30px;">${pred.risk_level} RISK</h2>
+                        </div>
+                        <p><strong>Confidence:</strong> ${(pred.confidence * 100).toFixed(1)}%</p>
+                        <p><strong>Probability:</strong> ${(pred.risk_probability * 100).toFixed(1)}%</p>
+                        ${pred.factors ? '<p><strong>Risk Factors:</strong> ' + pred.factors.join(', ') + '</p>' : ''}
+                        ${pred.recommendations ? '<div class="alert-box alert-info"><strong>Recommendations:</strong><br>' + pred.recommendations.join('<br>') + '</div>' : ''}
+                    `;
+                } else {
+                    document.getElementById('predictionDisplay').innerHTML = `<p class="alert-box alert-danger">${data.error || 'Failed to predict risk. Please record vitals first.'}</p>`;
+                }
+            } catch (error) {
+                alert('Connection error: ' + error.message);
+            }
+        }
+
+        // Send chat message
+        async function sendChatMessage() {
+            const messageEl = document.getElementById('chatMessage');
+            const message = messageEl.value.trim();
+            
+            if (!message) return;
+
+            // Add user message to chat
+            addChatMessage(message, 'user');
+            messageEl.value = '';
+
+            try {
+                const response = await fetch(API_BASE + '/api/chatbot/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    addChatMessage(data.response, 'bot');
+                } else {
+                    addChatMessage('Error: ' + (data.error || 'Failed to get response'), 'bot');
+                }
+            } catch (error) {
+                addChatMessage('Connection error: ' + error.message, 'bot');
+            }
+        }
+
+        // Add message to chat box
+        function addChatMessage(message, sender) {
+            const chatBox = document.getElementById('chatBox');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message chat-' + sender;
+            messageDiv.textContent = message;
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Get recommended doctors
+        async function getRecommendedDoctors() {
+            try {
+                const response = await fetch(API_BASE + '/api/doctors/recommend');
+                const data = await response.json();
+
+                if (response.ok && data.recommendations) {
+                    let html = '<div style="margin-top: 20px;">';
+                    
+                    if (data.recommendations.length === 0) {
+                        html += '<p style="text-align: center; color: #999;">No doctor recommendations available. Record vitals and get health prediction first.</p>';
+                    } else {
+                        data.recommendations.forEach(rec => {
+                            const urgencyClass = 'risk-' + rec.urgency.toLowerCase();
+                            html += `
+                                <div class="alert-box alert-info" style="margin-bottom: 15px;">
+                                    <h4>${rec.doctor.full_name} - ${rec.doctor.specialization}</h4>
+                                    <p><strong>Urgency:</strong> <span class="risk-badge ${urgencyClass}">${rec.urgency}</span></p>
+                                    <p><strong>Reason:</strong> ${rec.reason}</p>
+                                    ${rec.doctor.email ? '<p>📧 ' + rec.doctor.email + '</p>' : ''}
+                                </div>
+                            `;
+                        });
+                    }
+                    
+                    html += '</div>';
+                    document.getElementById('doctorsList').innerHTML = html;
+                } else {
+                    document.getElementById('doctorsList').innerHTML = `<p class="alert-box alert-danger">${data.error || 'Failed to get recommendations'}</p>`;
+                }
+            } catch (error) {
+                alert('Connection error: ' + error.message);
+            }
+        }
+
+        // Switch tabs
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Enter key handlers
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') login();
+        });
+
+        document.getElementById('chatMessage').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendChatMessage();
+            }
+        });
+    </script>
+</body>
+</html>

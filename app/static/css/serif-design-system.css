@@ -1,0 +1,566 @@
+/* ============================================================================
+    MINIMALIST MODERN DESIGN SYSTEM
+    Global theme layer for Smart Health Monitor static pages.
+    ============================================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+
+:root {
+     --serif-background: #fafafa;
+     --serif-foreground: #0f172a;
+     --serif-muted: #f1f5f9;
+     --serif-muted-foreground: #64748b;
+     --serif-accent: #0052ff;
+     --serif-accent-secondary: #4d7cff;
+     --serif-border: #e2e8f0;
+     --serif-card: #ffffff;
+     --serif-ring: #0052ff;
+
+     --mm-gradient-primary: linear-gradient(135deg, #0052ff 0%, #4d7cff 100%);
+     --mm-gradient-soft: linear-gradient(135deg, rgba(0, 82, 255, 0.08) 0%, rgba(77, 124, 255, 0.03) 100%);
+     --mm-shadow-accent: 0 4px 14px rgba(0, 82, 255, 0.25);
+     --mm-shadow-accent-lg: 0 8px 24px rgba(0, 82, 255, 0.35);
+
+    --serif-success-bg: #edf7ef;
+    --serif-success-fg: #1f5f2d;
+    --serif-success-border: #b9ddc0;
+    --serif-warning-bg: #fff6e7;
+    --serif-warning-fg: #7a4a00;
+    --serif-warning-border: #f0d6a6;
+    --serif-danger-bg: #fdeeee;
+    --serif-danger-fg: #8a1f1f;
+    --serif-danger-border: #efc6c6;
+    --serif-info-bg: #eef4fb;
+    --serif-info-fg: #1f466f;
+    --serif-info-border: #c7d8ec;
+
+    --serif-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+    --serif-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+    --serif-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08);
+    --serif-shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+
+    --serif-font-display: "Calistoga", Georgia, serif;
+    --serif-font-body: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --serif-font-mono: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+
+    --serif-radius-sm: 6px;
+    --serif-radius-md: 8px;
+    --serif-radius-lg: 10px;
+
+    --serif-space-1: 0.25rem;
+    --serif-space-2: 0.5rem;
+    --serif-space-3: 0.75rem;
+    --serif-space-4: 1rem;
+    --serif-space-5: 1.5rem;
+    --serif-space-6: 2rem;
+}
+
+html {
+    background: var(--serif-background);
+}
+
+body {
+    font-family: var(--serif-font-body) !important;
+    color: var(--serif-foreground) !important;
+    background: var(--serif-background) !important;
+    line-height: 1.65;
+    letter-spacing: 0;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.02;
+    background-image: radial-gradient(rgba(15, 23, 42, 1) 1px, transparent 1px);
+    background-size: 32px 32px;
+    z-index: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.section-title,
+.module-title,
+.content-header h1,
+.auth-form-header h2 {
+    font-family: var(--serif-font-display) !important;
+    color: var(--serif-foreground) !important;
+    letter-spacing: -0.02em;
+}
+
+p,
+label,
+small,
+span,
+a,
+li,
+input,
+select,
+textarea,
+button {
+    font-family: var(--serif-font-body);
+}
+
+small,
+.text-sm,
+.breadcrumb,
+.user-role,
+.form-footer p,
+.navbar-nav li a,
+.sidebar-nav li a,
+.form-group label,
+.form-options,
+.card-subtitle {
+    color: var(--serif-muted-foreground) !important;
+}
+
+.navbar,
+.header,
+.dashboard-navbar,
+.auth-card,
+.dashboard-sidebar,
+.sidebar,
+.welcome-section,
+.module-card,
+.stat-card,
+.card,
+.modal,
+.dropdown-menu,
+.table-container,
+.widget,
+.panel,
+.health-card,
+.chart-card,
+.profile-card,
+.summary-card {
+    background: var(--serif-card) !important;
+    border: 1px solid var(--serif-border) !important;
+    box-shadow: var(--serif-shadow-sm) !important;
+    border-radius: var(--serif-radius-md);
+    position: relative;
+    z-index: 1;
+}
+
+.inverted-section,
+.dark-section,
+.stats-section-dark,
+.cta-dark {
+    background: var(--serif-foreground) !important;
+    color: #f8fafc !important;
+    border: 1px solid color-mix(in srgb, var(--serif-foreground), white 10%) !important;
+}
+
+.inverted-section::before,
+.dark-section::before,
+.stats-section-dark::before,
+.cta-dark::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 1) 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.03;
+    pointer-events: none;
+}
+
+.navbar,
+.header,
+.dashboard-navbar,
+.sidebar-header,
+.auth-tabs,
+.modal-header,
+.modal-footer,
+.card-header,
+.panel-header,
+.section-header {
+    border-bottom: 1px solid var(--serif-border) !important;
+    background: var(--serif-card) !important;
+}
+
+.module-card::before,
+.stat-card::before,
+.card::before,
+.panel::before,
+.widget::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--serif-accent), var(--serif-accent-secondary));
+}
+
+a {
+    color: var(--serif-accent);
+    text-decoration-color: rgba(184, 134, 11, 0.4);
+    text-underline-offset: 4px;
+}
+
+a:hover {
+    color: var(--serif-accent-secondary);
+}
+
+button,
+.btn,
+.btn-submit,
+.logout-btn,
+.nav-btn.active,
+.auth-tab.active::after,
+.sidebar-nav li a.active,
+.navbar-nav li a.active,
+.navbar-brand::before,
+.logo-icon,
+.user-avatar,
+.module-icon {
+    transition: all 200ms ease-out;
+}
+
+.btn,
+.btn-primary,
+.btn-submit,
+.logout-btn,
+.nav-btn.active,
+button[type="submit"] {
+    background: var(--mm-gradient-primary) !important;
+    color: #ffffff !important;
+    border: 1px solid var(--serif-accent) !important;
+    border-radius: var(--serif-radius-sm) !important;
+    min-height: 44px;
+    box-shadow: var(--mm-shadow-accent) !important;
+    touch-action: manipulation;
+}
+
+.btn:hover,
+.btn-primary:hover,
+.btn-submit:hover,
+.logout-btn:hover,
+button[type="submit"]:hover {
+    background: linear-gradient(135deg, #1f63ff 0%, #5f89ff 100%) !important;
+    border-color: var(--serif-accent-secondary) !important;
+    box-shadow: var(--mm-shadow-accent-lg) !important;
+    transform: translateY(-1px);
+}
+
+.btn-secondary,
+.btn-outline,
+.nav-btn,
+.auth-tab,
+.sidebar-nav li a,
+.navbar-nav li a {
+    background: transparent !important;
+    color: var(--serif-foreground) !important;
+    border: 1px solid var(--serif-border);
+    border-radius: var(--serif-radius-sm);
+}
+
+.btn-secondary:hover,
+.btn-outline:hover,
+.nav-btn:hover,
+.auth-tab:hover,
+.sidebar-nav li a:hover,
+.navbar-nav li a:hover {
+    background: var(--serif-muted) !important;
+    color: var(--serif-accent) !important;
+    border-color: var(--serif-accent) !important;
+}
+
+input,
+select,
+textarea,
+.form-group input,
+.form-group select,
+.navbar-search input {
+    background: #fff !important;
+    border: 1px solid var(--serif-border) !important;
+    border-radius: var(--serif-radius-sm) !important;
+    color: var(--serif-foreground) !important;
+    min-height: 44px;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+.form-group input:focus,
+.form-group select:focus,
+.navbar-search input:focus {
+    outline: none !important;
+    border-color: var(--serif-accent) !important;
+    box-shadow: 0 0 0 2px rgba(184, 134, 11, 0.18) !important;
+}
+
+::placeholder {
+    color: color-mix(in srgb, var(--serif-muted-foreground), white 20%);
+}
+
+.sidebar-logo,
+.navbar-brand,
+.logo {
+    color: var(--serif-foreground) !important;
+    font-family: var(--serif-font-display) !important;
+    letter-spacing: -0.01em;
+}
+
+.sidebar-logo::before,
+.navbar-brand::before,
+.logo-icon,
+.user-avatar,
+.module-icon {
+    background: var(--mm-gradient-primary) !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+}
+
+.navbar-action-btn.notification::after,
+.badge,
+.status-badge,
+.alert-badge {
+    background: var(--serif-accent) !important;
+    color: #ffffff !important;
+}
+
+.hr,
+.rule,
+.divider,
+.section-divider,
+.auth-form-wrapper,
+.form-footer,
+.table tr,
+.table th,
+.table td {
+    border-color: var(--serif-border) !important;
+}
+
+.section-label,
+.label,
+.meta,
+.tag,
+.eyebrow,
+.kicker {
+    font-family: var(--serif-font-mono) !important;
+    font-size: 0.75rem !important;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--serif-accent) !important;
+}
+
+.gradient-text,
+.text-gradient {
+    background: linear-gradient(to right, var(--serif-accent), var(--serif-accent-secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent !important;
+}
+
+.pill-label,
+.section-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--serif-space-2);
+    border: 1px solid color-mix(in srgb, var(--serif-accent), white 65%);
+    background: color-mix(in srgb, var(--serif-accent), white 95%);
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+}
+
+.pill-label::before,
+.section-pill::before {
+    content: "";
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--serif-accent);
+    animation: mm-pulse 2s infinite;
+}
+
+@keyframes mm-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.7; }
+}
+
+.lift-on-hover,
+.module-card,
+.score-card,
+.doctor-card,
+.appointment-card,
+.prediction-card {
+    transition: transform 0.25s ease-out, box-shadow 0.25s ease-out, border-color 0.25s ease-out;
+}
+
+.lift-on-hover:hover,
+.module-card:hover,
+.score-card:hover,
+.doctor-card:hover,
+.appointment-card:hover,
+.prediction-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--serif-shadow-xl);
+}
+
+.hero-accent-glow {
+    position: relative;
+}
+
+.hero-accent-glow::after {
+    content: "";
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(0, 82, 255, 0.1) 0%, rgba(0, 82, 255, 0) 72%);
+    filter: blur(40px);
+    top: -80px;
+    right: -80px;
+    pointer-events: none;
+}
+
+.dashboard-content,
+.container,
+.main-content,
+.content,
+.auth-container {
+    position: relative;
+    z-index: 1;
+}
+
+.container,
+.main-content,
+.dashboard-content {
+    padding-inline: var(--serif-space-6);
+}
+
+.card,
+.panel,
+.widget,
+.summary-card,
+.profile-card,
+.chart-card,
+.health-card,
+.result-section,
+.quick-actions,
+.welcome-section,
+.score-card,
+.doctor-card,
+.appointment-card,
+.vital-item,
+.prediction-card {
+    border-radius: var(--serif-radius-lg) !important;
+    box-shadow: var(--serif-shadow-sm) !important;
+}
+
+.section-label,
+.label,
+.meta,
+.tag,
+.eyebrow,
+.kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--serif-space-2);
+}
+
+.section-label::after,
+.eyebrow::after,
+.kicker::after {
+    content: "";
+    width: 2.25rem;
+    height: 1px;
+    background: color-mix(in srgb, var(--serif-accent), white 45%);
+}
+
+.alert,
+.badge,
+.status-badge,
+.risk-level,
+.appointment-status {
+    border: 1px solid var(--serif-border);
+    border-radius: 999px;
+    font-weight: 600;
+}
+
+.alert-success,
+.badge-normal,
+.status-confirmed {
+    background: var(--serif-success-bg) !important;
+    color: var(--serif-success-fg) !important;
+    border-color: var(--serif-success-border) !important;
+}
+
+.alert-warning,
+.badge-warning,
+.status-pending {
+    background: var(--serif-warning-bg) !important;
+    color: var(--serif-warning-fg) !important;
+    border-color: var(--serif-warning-border) !important;
+}
+
+.alert-error,
+.badge-danger,
+.status-cancelled,
+.status-danger {
+    background: var(--serif-danger-bg) !important;
+    color: var(--serif-danger-fg) !important;
+    border-color: var(--serif-danger-border) !important;
+}
+
+.alert-info,
+.badge-info,
+.status-info {
+    background: var(--serif-info-bg) !important;
+    color: var(--serif-info-fg) !important;
+    border-color: var(--serif-info-border) !important;
+}
+
+.table,
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.table th,
+table th {
+    font-family: var(--serif-font-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    color: var(--serif-muted-foreground);
+}
+
+.table td,
+table td {
+    color: var(--serif-foreground);
+}
+
+@media (max-width: 768px) {
+    body {
+        line-height: 1.65;
+    }
+
+    h1 {
+        font-size: clamp(2rem, 6vw, 2.5rem) !important;
+    }
+
+    h2 {
+        font-size: clamp(1.5rem, 5vw, 2rem) !important;
+    }
+
+    .btn,
+    .btn-primary,
+    .btn-submit,
+    .logout-btn,
+    button[type="submit"] {
+        width: 100%;
+    }
+
+    .container,
+    .main-content,
+    .dashboard-content {
+        padding-inline: var(--serif-space-4);
+    }
+}

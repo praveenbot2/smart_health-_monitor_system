@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency SOS - Smart Health Monitor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--serif-font-body, "Source Sans Pro", "Segoe UI", Arial, sans-serif);
+            background: linear-gradient(135deg, rgba(5, 22, 48, 0.55) 0%, rgba(7, 51, 99, 0.32) 52%, rgba(8, 15, 36, 0.5) 100%), url('/static/images/module-bg.avif');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(255, 105, 180, 0.22);
+            border-radius: 50%;
+            animation: float 20s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-title {
+            color: #7d3a5b;
+        }
+
+        .header-title h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FF006E, #00D9FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 18px rgba(255, 0, 110, 0.24);
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                text-shadow: 0 0 16px rgba(230, 62, 124, 0.25);
+            }
+            50% {
+                text-shadow: 0 0 24px rgba(230, 62, 124, 0.42), 0 0 36px rgba(230, 62, 124, 0.26);
+            }
+        }
+
+        .header-title p {
+            color: #95637d;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .back-btn {
+            padding: 0.8rem 1.5rem;
+            background: #fff0f7;
+            backdrop-filter: blur(10px);
+            border: 1px solid #f7c7dc;
+            color: #a03f6b;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: var(--serif-font-body, "Source Sans Pro", "Segoe UI", Arial, sans-serif);
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #ffe5f2;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(230, 62, 124, 0.18);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* SOS Button Section */
+        .sos-section {
+            background: #fff7fc;
+            backdrop-filter: blur(10px);
+            border: 1px solid #f6d8e8;
+            border-radius: 24px;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .sos-button {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-size: 4rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 50px rgba(255, 71, 87, 0.5);
+            animation: pulse 2s ease-in-out infinite;
+            position: relative;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 50px rgba(255, 71, 87, 0.5);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 80px rgba(255, 71, 87, 0.8),
+                            0 0 120px rgba(255, 71, 87, 0.4);
+                transform: scale(1.02);
+            }
+        }
+
+        .sos-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 100px rgba(255, 71, 87, 0.8);
+        }
+
+        .sos-button:active {
+            transform: scale(0.95);
+        }
+
+        .sos-button.activated {
+            animation: emergencyPulse 0.5s ease-in-out infinite;
+        }
+
+        @keyframes emergencyPulse {
+            0%, 100% {
+                transform: scale(1);
+                background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
+            }
+            50% {
+                transform: scale(1.1);
+                background: linear-gradient(135deg, #ff6b81 0%, #ff4757 100%);
+            }
+        }
+
+        .sos-ripple {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid #ff4757;
+            animation: ripple 1.5s ease-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .sos-text {
+            color: #b33f72;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 2rem;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .sos-status {
+            color: #9d6b83;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        /* Emergency Contacts Section */
+        .contacts-section {
+            background: #fff7fc;
+            backdrop-filter: blur(10px);
+            border: 1px solid #f6d8e8;
+            border-radius: 24px;
+            padding: 2rem;
+            animation: fadeInUp 0.8s ease-out 0.2s backwards;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            color: #9f3662;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .add-contact-btn {
+            padding: 0.6rem 1.2rem;
+            background: linear-gradient(135deg, #ff7eb3 0%, #ff4f93 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: var(--serif-font-body, "Source Sans Pro", "Segoe UI", Arial, sans-serif);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .add-contact-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 79, 147, 0.35);
+        }
+
+        .contact-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .contact-card {
+            background: #ffffff;
+            border: 1px solid #f6d9e8;
+            border-radius: 16px;
+            padding: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .contact-card:hover {
+            background: #ffeff8;
+            transform: translateX(5px);
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-name {
+            color: #6f2d4f;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .contact-details {
+            color: #996a81;
+            font-size: 0.9rem;
+        }
+
+        .contact-priority {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: #ffe0ef;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: #b24074;
+            margin-left: 0.5rem;
+        }
+
+        .contact-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .contact-btn {
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: var(--serif-font-body, "Source Sans Pro", "Segoe UI", Arial, sans-serif);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .call-btn {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            color: white;
+        }
+
+        .call-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 210, 255, 0.4);
+        }
+
+        .edit-btn {
+            background: #ffe5f2;
+            color: #a03f6b;
+        }
+
+        .edit-btn:hover {
+            background: #ffd6ea;
+        }
+
+        /* Quick Dial Section */
+        .quick-dial-section {
+            background: #fff7fc;
+            backdrop-filter: blur(10px);
+            border: 1px solid #f6d8e8;
+            border-radius: 24px;
+            padding: 2rem;
+            animation: fadeInUp 0.8s ease-out 0.4s backwards;
+        }
+
+        .quick-dial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .quick-dial-btn {
+            background: #ffffff;
+            border: 1px solid #f6d9e8;
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quick-dial-btn:hover {
+            background: #ffeff8;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(230, 62, 124, 0.15);
+        }
+
+        .quick-dial-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .quick-dial-name {
+            color: #6f2d4f;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .quick-dial-number {
+            color: #d63384;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* Emergency Info */
+        .info-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .info-card {
+            background: #fff7fc;
+            backdrop-filter: blur(10px);
+            border: 1px solid #f6d8e8;
+            border-left: 4px solid;
+            border-radius: 16px;
+            padding: 2rem;
+            animation: fadeInUp 0.8s ease-out 0.6s backwards;
+        }
+
+        .info-card.warning {
+            border-left-color: #ff9800;
+        }
+
+        .info-card.success {
+            border-left-color: #00d2ff;
+        }
+
+        .info-card h3 {
+            color: #7f3658;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-card ul {
+            color: #94657c;
+            line-height: 1.8;
+            margin-left: 1.5rem;
+        }
+
+        .info-card p {
+            color: #94657c;
+            line-height: 1.6;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(97, 45, 70, 0.35);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background: linear-gradient(180deg, #fffafd 0%, #fff1f8 100%);
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 24px;
+            max-width: 500px;
+            border: 1px solid #f5cfe0;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            color: #913a64;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: #8a5570;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            background: #ffffff;
+            border: 1px solid #f3c9dc;
+            border-radius: 10px;
+            color: #71344f;
+            font-family: var(--serif-font-body, "Source Sans Pro", "Segoe UI", Arial, sans-serif);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #e75490;
+            background: #fff7fb;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #8a5570;
+            cursor: pointer;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: var(--serif-font-body, "Source Sans Pro", "Segoe UI", Arial, sans-serif);
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #ff7eb3 0%, #ff4f93 100%);
+            color: white;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 79, 147, 0.35);
+        }
+
+        .cancel-btn {
+            background: #ffe5f2;
+            color: #a03f6b;
+        }
+
+        .cancel-btn:hover {
+            background: #ffd6ea;
+        }
+
+        .close {
+            color: #b56b8d;
+            float: right;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close:hover {
+            color: #8f3f66;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #b58ba1;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header-title h1 {
+                font-size: 2rem;
+            }
+
+            .sos-button {
+                width: 180px;
+                height: 180px;
+                font-size: 3rem;
+            }
+
+            .quick-dial-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(231, 84, 144, 0.2);
+            border-radius: 50%;
+            border-top-color: #e75490;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    
+        /* ===== REAL-TIME ANIMATIONS ===== */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 110, 0.3), 0 0 20px rgba(0, 217, 255, 0.2); }
+            50% { box-shadow: 0 0 20px rgba(255, 0, 110, 0.6), 0 0 30px rgba(0, 217, 255, 0.4); }
+        }
+
+        @keyframes slide-in-top {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slide-in-bottom {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fade-in-smooth {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes real-time-pulse {
+            0%, 100% { 
+                box-shadow: 0 0 8px rgba(255, 0, 110, 0.4), inset 0 0 8px rgba(0, 217, 255, 0.1);
+            }
+            50% { 
+                box-shadow: 0 0 16px rgba(255, 0, 110, 0.6), inset 0 0 12px rgba(0, 217, 255, 0.2);
+            }
+        }
+
+        @keyframes status-indicator {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Real-time enhanced styles */
+        .header {
+            animation: slide-in-top 0.6s ease-out;
+        }
+
+        .card, .alert-item, .event-card, .status-box, .metric-card {
+            animation: slide-in-bottom 0.5s ease-out backwards;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+        .card:nth-child(5) { animation-delay: 0.5s; }
+
+        .status-badge {
+            animation: real-time-pulse 1.5s ease-in-out infinite;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-badge.active {
+            background: rgba(0, 217, 255, 0.15);
+            border: 1px solid #00D9FF;
+            color: #00D9FF;
+        }
+
+        .status-badge.alert {
+            background: rgba(255, 0, 110, 0.15);
+            border: 1px solid #FF006E;
+            color: #FF006E;
+        }
+
+        .status-badge.warning {
+            background: rgba(255, 165, 0, 0.15);
+            border: 1px solid #FFA500;
+            color: #FFA500;
+        }
+
+        .button-group button, button.action-btn {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button-group button:hover, button.action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 0, 110, 0.3);
+        }
+
+        .button-group button:active, button.action-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Gradient backgrounds */
+        .gradient-card {
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.05) 0%, rgba(0, 217, 255, 0.05) 100%);
+            border: 1px solid rgba(255, 0, 110, 0.1);
+        }
+
+        .gradient-card:hover {
+            border-color: rgba(0, 217, 255, 0.3);
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.08) 0%, rgba(0, 217, 255, 0.08) 100%);
+        }
+
+        /* Real-time indicator dot */
+        .real-time-dot::before {
+            content: '●';
+            display: inline-block;
+            color: #00D9FF;
+            animation: status-indicator 1s ease-in-out infinite;
+            margin-right: 0.5rem;
+        }
+
+        /* Smooth transitions for all interactive elements */
+        * {
+            transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #FF006E !important;
+            box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.1), 0 0 12px rgba(0, 217, 255, 0.2) !important;
+        }
+
+    </style>
+    <link rel="stylesheet" href="/static/css/serif-design-system.css">
+    <link rel="stylesheet" href="/static/css/advanced-design-system.css">
+    <link rel="stylesheet" href="/static/css/advanced-components.css">
+    <script defer src="/static/js/advanced-utilities.js"></script>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-title">
+                <h1>🚨 EMERGENCY SOS</h1>
+                <p>Get immediate help in critical health situations</p>
+            </div>
+            <button class="back-btn" onclick="window.location.href='/dashboard'">← Back to Dashboard</button>
+        </div>
+
+        <div class="main-grid">
+            <!-- SOS Button Section -->
+            <div class="sos-section">
+                <button class="sos-button" id="sosButton" onclick="activateEmergency()">
+                    🚨
+                    <div class="sos-ripple"></div>
+                </button>
+                <div class="sos-text">TAP FOR EMERGENCY HELP</div>
+                <div class="sos-status" id="sosStatus">Emergency services will be contacted</div>
+            </div>
+
+            <!-- Emergency Contacts Section -->
+            <div class="contacts-section">
+                <div class="section-header">
+                    <h2 class="section-title">📞 Emergency Contacts</h2>
+                    <button class="add-contact-btn" onclick="showAddContactModal()">+ Add Contact</button>
+                </div>
+                <div class="contact-list" id="contactList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <p>No emergency contacts added yet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Dial Section -->
+        <div class="quick-dial-section">
+            <h2 class="section-title">⚡ Quick Dial</h2>
+            <div class="quick-dial-grid" id="quickDialGrid">
+                <!-- Quick dial buttons will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Information Cards -->
+        <div class="info-cards">
+            <div class="info-card warning">
+                <h3>⚠️ When to Use Emergency SOS</h3>
+                <ul>
+                    <li>Severe chest pain or pressure</li>
+                    <li>Difficulty breathing</li>
+                    <li>Loss of consciousness</li>
+                    <li>Severe bleeding</li>
+                    <li>Signs of stroke</li>
+                    <li>Severe allergic reactions</li>
+                    <li>Life-threatening emergencies</li>
+                </ul>
+            </div>
+
+            <div class="info-card success">
+                <h3>✅ What Happens When You Send SOS</h3>
+                <p>
+                    🔴 Your location is shared with emergency services<br>
+                    📍 Your medical profile is sent to responders<br>
+                    📞 Emergency contacts are automatically notified<br>
+                    🏥 Nearest hospital location is identified<br>
+                    ⏱️ Real-time tracking of emergency response
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Contact Modal -->
+    <div id="contactModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeContactModal()">&times;</span>
+            <h2 class="modal-header">Add Emergency Contact</h2>
+            <form id="contactForm">
+                <div class="form-group">
+                    <label>Name *</label>
+                    <input type="text" id="contactName" required placeholder="e.g., John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Relationship *</label>
+                    <select id="contactRelationship" required>
+                        <option value="">Select relationship</option>
+                        <option value="Spouse">Spouse</option>
+                        <option value="Parent">Parent</option>
+                        <option value="Sibling">Sibling</option>
+                        <option value="Child">Child</option>
+                        <option value="Friend">Friend</option>
+                        <option value="Doctor">Doctor</option>
+                        <option value="Neighbor">Neighbor</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number *</label>
+                    <input type="tel" id="contactPhone" required placeholder="+1 (555) 123-4567">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="contactEmail" placeholder="email@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select id="contactPriority">
+                        <option value="1">Primary (1)</option>
+                        <option value="2">Secondary (2)</option>
+                        <option value="3">Tertiary (3)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Notification Methods</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="notifySms" checked>
+                            <span>SMS</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="notifyEmail" checked>
+                            <span>Email</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <input type="text" id="contactNotes" placeholder="Additional information">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn cancel-btn" onclick="closeContactModal()">Cancel</button>
+                    <button type="submit" class="modal-btn save-btn">Save Contact</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialize particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        createParticles();
+
+        // Load emergency contacts
+        function loadEmergencyContacts() {
+            fetch('/api/emergency/contacts')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success && data.contacts.length > 0) {
+                        displayContacts(data.contacts);
+                    }
+                })
+                .catch(e => console.error('Error loading contacts:', e));
+        }
+
+        function displayContacts(contacts) {
+            const contactList = document.getElementById('contactList');
+            contactList.innerHTML = contacts.map(contact => `
+                <div class="contact-card">
+                    <div class="contact-info">
+                        <div class="contact-name">
+                            ${contact.name}
+                            <span class="contact-priority">Priority ${contact.priority}</span>
+                        </div>
+                        <div class="contact-details">
+                            ${contact.relationship} • ${contact.phone}
+                            ${contact.email ? ' • ' + contact.email : ''}
+                        </div>
+                    </div>
+                    <div class="contact-actions">
+                        <button class="contact-btn call-btn" onclick="makeCall('${contact.phone}')">📞 Call</button>
+                        <button class="contact-btn edit-btn" onclick="editContact(${contact.id})">✏️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load quick dial numbers
+        function loadQuickDial() {
+            fetch('/api/emergency/quick-dial')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        displayQuickDial(data.quick_dial);
+                    }
+                })
+                .catch(e => console.error('Error loading quick dial:', e));
+        }
+
+        function displayQuickDial(quickDial) {
+            const grid = document.getElementById('quickDialGrid');
+            grid.innerHTML = quickDial.map(item => `
+                <div class="quick-dial-btn" onclick="makeCall('${item.number}')">
+                    <div class="quick-dial-icon">${item.name.split(' ')[0]}</div>
+                    <div class="quick-dial-name">${item.name.substring(item.name.indexOf(' ') + 1)}</div>
+                    <div class="quick-dial-number">${item.number}</div>
+                </div>
+            `).join('');
+        }
+
+        // Show add contact modal
+        function showAddContactModal() {
+            document.getElementById('contactModal').style.display = 'block';
+            document.getElementById('contactForm').reset();
+        }
+
+        function closeContactModal() {
+            document.getElementById('contactModal').style.display = 'none';
+        }
+
+        // Handle contact form submission
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const contactData = {
+                name: document.getElementById('contactName').value,
+                relationship: document.getElementById('contactRelationship').value,
+                phone: document.getElementById('contactPhone').value,
+                email: document.getElementById('contactEmail').value,
+                priority: parseInt(document.getElementById('contactPriority').value),
+                notify_via_sms: document.getElementById('notifySms').checked,
+                notify_via_email: document.getElementById('notifyEmail').checked,
+                notes: document.getElementById('contactNotes').value
+            };
+
+            fetch('/api/emergency/contacts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(contactData)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ Emergency contact added successfully!');
+                    closeContactModal();
+                    loadEmergencyContacts();
+                } else {
+                    alert('❌ Error: ' + data.error);
+                }
+            })
+            .catch(e => {
+                console.error('Error:', e);
+                alert('❌ Failed to add contact. Please try again.');
+            });
+        });
+
+        // Activate emergency SOS
+        function activateEmergency() {
+            if (!confirm('🚨 This will send an SOS signal to emergency services and notify your emergency contacts. Continue?')) {
+                return;
+            }
+
+            const sosButton = document.getElementById('sosButton');
+            const sosStatus = document.getElementById('sosStatus');
+
+            sosButton.classList.add('activated');
+            sosStatus.innerHTML = '<span class="loading"></span> Activating emergency SOS...';
+
+            // Get user's location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    sendSOSSignal({
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                        emergency_type: 'Medical',
+                        description: 'Emergency SOS activated from Health Monitor app'
+                    });
+                }, function(error) {
+                    // Send SOS without location
+                    sendSOSSignal({
+                        emergency_type: 'Medical',
+                        description: 'Emergency SOS activated from Health Monitor app (location unavailable)'
+                    });
+                });
+            } else {
+                sendSOSSignal({
+                    emergency_type: 'Medical',
+                    description: 'Emergency SOS activated from Health Monitor app (location unavailable)'
+                });
+            }
+        }
+
+        function sendSOSSignal(data) {
+            fetch('/api/emergency/sos/activate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(r => r.json())
+            .then(result => {
+                const sosButton = document.getElementById('sosButton');
+                const sosStatus = document.getElementById('sosStatus');
+
+                if (result.success) {
+                    sosStatus.innerHTML = `✅ SOS Activated! ${result.contacts_notified} contacts notified.`;
+                    setTimeout(() => {
+                        sosButton.classList.remove('activated');
+                        sosStatus.innerHTML = 'Emergency services will be contacted';
+                    }, 5000);
+
+                    alert(`🚨 EMERGENCY SOS ACTIVATED!\n\n✅ Emergency services notified\n✅ ${result.contacts_notified} emergency contacts notified\n📍 Your location has been shared\n\nHelp is on the way!`);
+                } else {
+                    sosButton.classList.remove('activated');
+                    sosStatus.innerHTML = 'Emergency services will be contacted';
+                    alert('❌ Error activating SOS: ' + result.error);
+                }
+            })
+            .catch(e => {
+                console.error('Error:', e);
+                document.getElementById('sosButton').classList.remove('activated');
+                document.getElementById('sosStatus').innerHTML = 'Emergency services will be contacted';
+                alert('❌ Failed to activate SOS. Please call emergency services directly.');
+            });
+        }
+
+        function makeCall(number) {
+            if (confirm(`Call ${number}?`)) {
+                window.location.href = `tel:${number}`;
+            }
+        }
+
+        function editContact(contactId) {
+            alert('Edit contact feature coming soon!');
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('contactModal');
+            if (event.target == modal) {
+                closeContactModal();
+            }
+        }
+
+        // Load data on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            loadEmergencyContacts();
+            loadQuickDial();
+        });
+    </script>
+</body>
+</html>

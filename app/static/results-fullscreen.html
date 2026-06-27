@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Results - Smart Health Monitor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            color-scheme: light;
+            font-family: var(--serif-font-body, "Source Sans Pro", "Segoe UI", Arial, sans-serif);
+            background: linear-gradient(135deg, rgba(5, 22, 48, 0.55) 0%, rgba(7, 51, 99, 0.32) 52%, rgba(8, 15, 36, 0.5) 100%), url('/static/images/module-bg.avif');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: none;
+            min-height: 100vh;
+            margin: 0;
+            background: rgba(255, 255, 255, 0.84);
+            border-radius: 0;
+            padding: 2rem;
+            box-shadow: none;
+            backdrop-filter: blur(4px);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--serif-border, #e8e4df);
+            padding-bottom: 1rem;
+        }
+
+        .header h1 {
+            color: var(--serif-foreground, #1a1a1a);
+            font-family: var(--serif-font-display, Georgia, serif);
+            font-size: 2rem;
+        }
+
+        .back-btn {
+            padding: 0.7rem 1.5rem;
+            background: var(--serif-accent, #FF006E);
+            color: white;
+            border: 1px solid var(--serif-accent, #FF006E);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease-out;
+            min-height: 44px;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-1px);
+            background: var(--serif-accent-secondary, #4d7cff);
+            border-color: var(--serif-accent-secondary, #4d7cff);
+            box-shadow: 0 4px 12px rgba(26, 26, 26, 0.06);
+        }
+
+        .score-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .score-card {
+            background: #ffffff;
+            color: var(--serif-foreground, #1a1a1a);
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid var(--serif-border, #e8e4df);
+            box-shadow: 0 4px 12px rgba(26, 26, 26, 0.06);
+            position: relative;
+        }
+
+        .score-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--serif-accent, #FF006E), transparent 70%);
+        }
+
+        .score-label {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .score-value {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--serif-accent, #FF006E);
+            font-family: var(--serif-font-display, Georgia, serif);
+        }
+
+        .score-out-of {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .gauge {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 1rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            border: 3px solid color-mix(in srgb, var(--serif-accent, #FF006E), white 55%);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .result-section {
+            background: #ffffff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid var(--serif-border, #e8e4df);
+            border-left: 3px solid var(--serif-accent, #FF006E);
+        }
+
+        .result-section h3 {
+            color: var(--serif-foreground, #1a1a1a);
+            font-family: var(--serif-font-display, Georgia, serif);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .result-item {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .result-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .result-label {
+            color: #666;
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+        }
+
+        .result-value {
+            color: var(--serif-foreground, #1a1a1a);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+            font-weight: 600;
+        }
+
+        .badge-normal {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .risk-assessment {
+            background: #ffffff;
+            color: var(--serif-foreground, #1a1a1a);
+            padding: 2rem;
+            border-radius: 10px;
+            border: 1px solid var(--serif-border, #e8e4df);
+            margin-bottom: 2rem;
+        }
+
+        .risk-assessment h2 {
+            margin-bottom: 1.5rem;
+            font-family: var(--serif-font-display, Georgia, serif);
+        }
+
+        .risk-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .risk-item {
+            background: var(--serif-muted, #f5f3f0);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 3px solid var(--serif-accent, #FF006E);
+        }
+
+        .risk-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .risk-percentage {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .recommendations {
+            background: #ffffff;
+            border: 1px solid var(--serif-border, #e8e4df);
+            border-left: 3px solid var(--serif-accent, #FF006E);
+            padding: 1.5rem;
+            border-radius: 10px;
+        }
+
+        .recommendations h3 {
+            color: var(--serif-foreground, #1a1a1a);
+            font-family: var(--serif-font-display, Georgia, serif);
+            margin-bottom: 1rem;
+        }
+
+        .rec-item {
+            margin-bottom: 0.8rem;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .rec-item:before {
+            content: "✓ ";
+            color: var(--serif-accent, #FF006E);
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 0.9rem 1.8rem;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease-out;
+            min-height: 44px;
+        }
+
+        .btn-primary {
+            background: var(--serif-accent, #FF006E);
+            border-color: var(--serif-accent, #FF006E);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            background: var(--serif-accent-secondary, #4d7cff);
+            border-color: var(--serif-accent-secondary, #4d7cff);
+            box-shadow: 0 4px 12px rgba(26, 26, 26, 0.06);
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            color: var(--serif-foreground, #1a1a1a);
+            border-color: var(--serif-border, #e8e4df);
+        }
+
+        .btn-secondary:hover {
+            background: var(--serif-muted, #f5f3f0);
+            border-color: var(--serif-accent, #FF006E);
+            color: var(--serif-accent, #FF006E);
+        }
+
+        .section-label {
+            font-family: var(--serif-font-mono, monospace);
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--serif-accent, #FF006E);
+            margin-bottom: 0.75rem;
+            display: inline-block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #999;
+        }
+    
+        /* ===== REAL-TIME ANIMATIONS ===== */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 110, 0.3), 0 0 20px rgba(0, 217, 255, 0.2); }
+            50% { box-shadow: 0 0 20px rgba(255, 0, 110, 0.6), 0 0 30px rgba(0, 217, 255, 0.4); }
+        }
+
+        @keyframes slide-in-top {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slide-in-bottom {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fade-in-smooth {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes real-time-pulse {
+            0%, 100% { 
+                box-shadow: 0 0 8px rgba(255, 0, 110, 0.4), inset 0 0 8px rgba(0, 217, 255, 0.1);
+            }
+            50% { 
+                box-shadow: 0 0 16px rgba(255, 0, 110, 0.6), inset 0 0 12px rgba(0, 217, 255, 0.2);
+            }
+        }
+
+        @keyframes status-indicator {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Real-time enhanced styles */
+        .header {
+            animation: slide-in-top 0.6s ease-out;
+        }
+
+        .card, .alert-item, .event-card, .status-box, .metric-card {
+            animation: slide-in-bottom 0.5s ease-out backwards;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+        .card:nth-child(5) { animation-delay: 0.5s; }
+
+        .status-badge {
+            animation: real-time-pulse 1.5s ease-in-out infinite;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-badge.active {
+            background: rgba(0, 217, 255, 0.15);
+            border: 1px solid #00D9FF;
+            color: #00D9FF;
+        }
+
+        .status-badge.alert {
+            background: rgba(255, 0, 110, 0.15);
+            border: 1px solid #FF006E;
+            color: #FF006E;
+        }
+
+        .status-badge.warning {
+            background: rgba(255, 165, 0, 0.15);
+            border: 1px solid #FFA500;
+            color: #FFA500;
+        }
+
+        .button-group button, button.action-btn {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button-group button:hover, button.action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 0, 110, 0.3);
+        }
+
+        .button-group button:active, button.action-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Gradient backgrounds */
+        .gradient-card {
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.05) 0%, rgba(0, 217, 255, 0.05) 100%);
+            border: 1px solid rgba(255, 0, 110, 0.1);
+        }
+
+        .gradient-card:hover {
+            border-color: rgba(0, 217, 255, 0.3);
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.08) 0%, rgba(0, 217, 255, 0.08) 100%);
+        }
+
+        /* Real-time indicator dot */
+        .real-time-dot::before {
+            content: '●';
+            display: inline-block;
+            color: #00D9FF;
+            animation: status-indicator 1s ease-in-out infinite;
+            margin-right: 0.5rem;
+        }
+
+        /* Smooth transitions for all interactive elements */
+        * {
+            transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #FF006E !important;
+            box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.1), 0 0 12px rgba(0, 217, 255, 0.2) !important;
+        }
+
+    </style>
+    <link rel="stylesheet" href="/static/css/serif-design-system.css">
+    <link rel="stylesheet" href="/static/css/advanced-design-system.css">
+    <link rel="stylesheet" href="/static/css/advanced-components.css">
+    <script defer src="/static/js/advanced-utilities.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📊 Health Results & Analysis</h1>
+            <button class="back-btn" onclick="goBack()">← Back to Dashboard</button>
+        </div>
+
+        <!-- Score Cards -->
+        <span class="section-label">Performance Summary</span>
+        <div class="score-cards">
+            <div class="score-card">
+                <div class="score-label">Overall Health Score</div>
+                <div class="score-value" id="overall-score">--</div>
+                <div class="score-out-of">out of 100</div>
+            </div>
+            <div class="score-card">
+                <div class="score-label">Cardiovascular Health</div>
+                <div class="score-value" id="cardio-score">--</div>
+                <div class="score-out-of">out of 100</div>
+            </div>
+            <div class="score-card">
+                <div class="score-label">Metabolic Health</div>
+                <div class="score-value" id="metabolic-score">--</div>
+                <div class="score-out-of">out of 100</div>
+            </div>
+        </div>
+
+        <!-- Key Results -->
+        <span class="section-label">Clinical Breakdown</span>
+        <div class="results-grid">
+            <div class="result-section">
+                <h3>👤 Basic Metrics</h3>
+                <div class="result-item">
+                    <div class="result-label">Age</div>
+                    <div class="result-value" id="result-age">--</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">BMI</div>
+                    <div class="result-value" id="result-bmi">--</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">Body Type</div>
+                    <div class="result-value" id="result-body-type">--</div>
+                </div>
+            </div>
+
+            <div class="result-section">
+                <h3>❤️ Vital Signs</h3>
+                <div class="result-item">
+                    <div class="result-label">Heart Rate</div>
+                    <div class="result-value">
+                        <span id="result-hr">-- bpm</span>
+                        <span class="status-badge badge-normal" id="hr-status">Normal</span>
+                    </div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">Blood Pressure</div>
+                    <div class="result-value">
+                        <span id="result-bp">--</span>
+                        <span class="status-badge badge-normal" id="bp-status">Normal</span>
+                    </div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">Temperature</div>
+                    <div class="result-value">
+                        <span id="result-temp">-- °C</span>
+                        <span class="status-badge badge-normal" id="temp-status">Normal</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="result-section">
+                <h3>🫁 Respiratory & Blood</h3>
+                <div class="result-item">
+                    <div class="result-label">Oxygen Level</div>
+                    <div class="result-value">
+                        <span id="result-o2">-- %</span>
+                        <span class="status-badge badge-normal" id="o2-status">Normal</span>
+                    </div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">Blood Sugar</div>
+                    <div class="result-value">
+                        <span id="result-glucose">-- mg/dL</span>
+                        <span class="status-badge badge-normal" id="glucose-status">Normal</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risk Assessment -->
+        <div class="risk-assessment">
+            <h2>⚠️ Health Risk Assessment</h2>
+            <div class="risk-items">
+                <div class="risk-item">
+                    <div class="risk-name">Cardiac Risk</div>
+                    <div class="risk-percentage" id="cardiac-risk">--</div>
+                </div>
+                <div class="risk-item">
+                    <div class="risk-name">Diabetes Risk</div>
+                    <div class="risk-percentage" id="diabetes-risk">--</div>
+                </div>
+                <div class="risk-item">
+                    <div class="risk-name">Hypertension Risk</div>
+                    <div class="risk-percentage" id="hypertension-risk">--</div>
+                </div>
+                <div class="risk-item">
+                    <div class="risk-name">Overall Risk</div>
+                    <div class="risk-percentage" id="overall-risk">--</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="recommendations">
+            <h3>💡 Personalized Recommendations</h3>
+            <div id="recommendations-list">
+                <div class="rec-item">Record more health data to receive personalized recommendations.</div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="goToPatientData()">📝 Update Health Data</button>
+            <button class="btn btn-secondary" onclick="exportResults()">📥 Export Results</button>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            loadResults();
+        });
+
+        function loadResults() {
+            // Load user profile for basic info
+            fetch('/api/auth/profile')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.user) {
+                        const user = data.user;
+                        if (user.date_of_birth) {
+                            const age = calculateAge(new Date(user.date_of_birth));
+                            document.getElementById('result-age').textContent = age + ' years';
+                        }
+                    }
+                })
+                .catch(e => console.error('Error loading profile:', e));
+
+            // Load vitals for analysis
+            fetch('/api/health-records/vitals?limit=1')
+                .then(r => r.json())
+                .then(data => {
+                    const vitals = data.vitals || [];
+                    if (vitals.length > 0) {
+                        const vital = vitals[0];
+                        calculateAndDisplayResults(vital);
+                    } else {
+                        document.getElementById('empty-state')?.innerHTML = 
+                            '<div class="empty-state">No health data recorded yet. Record your vital signs to see analysis.</div>';
+                    }
+                })
+                .catch(e => console.error('Error loading vitals:', e));
+        }
+
+        function calculateAndDisplayResults(vital) {
+            // BMI Calculation
+            if (vital.height && vital.weight) {
+                const heightM = vital.height / 100;
+                const bmi = (vital.weight / (heightM * heightM)).toFixed(1);
+                let bodyType = 'Normal';
+                if (bmi < 18.5) bodyType = 'Underweight';
+                else if (bmi < 25) bodyType = 'Normal';
+                else if (bmi < 30) bodyType = 'Overweight';
+                else bodyType = 'Obese';
+                
+                document.getElementById('result-bmi').textContent = bmi;
+                document.getElementById('result-body-type').textContent = bodyType;
+            }
+
+            // Vital Signs Display
+            if (vital.heart_rate) {
+                document.getElementById('result-hr').textContent = vital.heart_rate + ' bpm';
+                const hrStatus = getHeartRateStatus(vital.heart_rate);
+                document.getElementById('hr-status').textContent = hrStatus.text;
+                document.getElementById('hr-status').className = 'status-badge badge-' + hrStatus.class;
+            }
+
+            if (vital.blood_pressure_systolic && vital.blood_pressure_diastolic) {
+                document.getElementById('result-bp').textContent = 
+                    vital.blood_pressure_systolic + '/' + vital.blood_pressure_diastolic;
+                const bpStatus = getBloodPressureStatus(vital.blood_pressure_systolic);
+                document.getElementById('bp-status').textContent = bpStatus.text;
+                document.getElementById('bp-status').className = 'status-badge badge-' + bpStatus.class;
+            }
+
+            if (vital.temperature) {
+                document.getElementById('result-temp').textContent = vital.temperature + ' °C';
+                const tempStatus = vital.temperature >= 36.5 && vital.temperature <= 37.5 ? 'normal' : 'danger';
+                document.getElementById('temp-status').className = 'status-badge badge-' + tempStatus;
+            }
+
+            if (vital.oxygen_level) {
+                document.getElementById('result-o2').textContent = vital.oxygen_level + ' %';
+                const o2Status = vital.oxygen_level >= 95 ? 'normal' : 'danger';
+                document.getElementById('o2-status').className = 'status-badge badge-' + o2Status;
+            }
+
+            if (vital.glucose) {
+                document.getElementById('result-glucose').textContent = vital.glucose + ' mg/dL';
+                const glucoseStatus = getGlucoseStatus(vital.glucose);
+                document.getElementById('glucose-status').textContent = glucoseStatus.text;
+                document.getElementById('glucose-status').className = 'status-badge badge-' + glucoseStatus.class;
+            }
+
+            // Calculate Scores
+            calculateScores(vital);
+            calculateRisks(vital);
+            generateRecommendations(vital);
+        }
+
+        function calculateScores(vital) {
+            let overall = 100;
+            let cardio = 100;
+            let metabolic = 100;
+
+            // Cardiovascular
+            if (vital.heart_rate && (vital.heart_rate < 60 || vital.heart_rate > 100)) cardio -= 15;
+            if (vital.blood_pressure_systolic && vital.blood_pressure_systolic > 140) cardio -= 20;
+            
+            // Metabolic
+            if (vital.glucose && (vital.glucose < 70 || vital.glucose > 125)) metabolic -= 20;
+            if (vital.weight && vital.height) {
+                const bmi = vital.weight / ((vital.height/100) ** 2);
+                if (bmi > 30 || bmi < 18.5) metabolic -= 15;
+            }
+
+            overall = (cardio + metabolic) / 2;
+
+            document.getElementById('overall-score').textContent = Math.max(0, Math.round(overall));
+            document.getElementById('cardio-score').textContent = Math.max(0, Math.round(cardio));
+            document.getElementById('metabolic-score').textContent = Math.max(0, Math.round(metabolic));
+        }
+
+        function calculateRisks(vital) {
+            let cardiac = 20;
+            let diabetes = 20;
+            let hypertension = 20;
+
+            if (vital.heart_rate && vital.heart_rate > 100) cardiac += 15;
+            if (vital.blood_pressure_systolic && vital.blood_pressure_systolic > 140) hypertension += 30;
+            if (vital.glucose && vital.glucose > 125) diabetes += 25;
+
+            document.getElementById('cardiac-risk').textContent = Math.min(100, cardiac) + '%';
+            document.getElementById('diabetes-risk').textContent = Math.min(100, diabetes) + '%';
+            document.getElementById('hypertension-risk').textContent = Math.min(100, hypertension) + '%';
+            document.getElementById('overall-risk').textContent = Math.min(100, (cardiac + diabetes + hypertension) / 3).toFixed(0) + '%';
+        }
+
+        function generateRecommendations(vital) {
+            const recommendations = [];
+
+            if (vital.heart_rate && vital.heart_rate > 100) {
+                recommendations.push('Control stress and practice relaxation techniques to reduce heart rate.');
+            }
+            if (vital.blood_pressure_systolic && vital.blood_pressure_systolic > 140) {
+                recommendations.push('Reduce sodium intake and increase physical activity to lower blood pressure.');
+            }
+            if (vital.glucose && vital.glucose > 125) {
+                recommendations.push('Reduce sugar consumption and maintain a balanced diet.');
+            }
+            if (vital.weight && vital.height) {
+                const bmi = vital.weight / ((vital.height/100) ** 2);
+                if (bmi > 30) recommendations.push('Start a regular exercise routine and maintain healthy diet to achieve ideal weight.');
+            }
+            if (recommendations.length === 0) {
+                recommendations.push('✅ Maintain your current healthy lifestyle.');
+                recommendations.push('✅ Continue regular health check-ups.');
+            }
+
+            document.getElementById('recommendations-list').innerHTML = recommendations
+                .map(rec => `<div class="rec-item">${rec}</div>`)
+                .join('');
+        }
+
+        function getHeartRateStatus(hr) {
+            if (hr < 60) return { text: 'Low', class: 'warning' };
+            if (hr > 100) return { text: 'High', class: 'danger' };
+            return { text: 'Normal', class: 'normal' };
+        }
+
+        function getBloodPressureStatus(sys) {
+            if (sys > 140) return { text: 'High', class: 'danger' };
+            if (sys < 90) return { text: 'Low', class: 'warning' };
+            return { text: 'Normal', class: 'normal' };
+        }
+
+        function getGlucoseStatus(glucose) {
+            if (glucose < 70) return { text: 'Low', class: 'danger' };
+            if (glucose > 125) return { text: 'High', class: 'danger' };
+            return { text: 'Normal', class: 'normal' };
+        }
+
+        function calculateAge(birthDate) {
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+
+        function goToPatientData() {
+            window.location.href = '/patient-data';
+        }
+
+        function exportResults() {
+            alert('Export functionality will be available soon!');
+        }
+
+        function goBack() {
+            window.location.href = '/dashboard';
+        }
+    </script>
+</body>
+</html>

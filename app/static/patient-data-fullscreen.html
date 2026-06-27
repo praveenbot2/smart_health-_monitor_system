@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Data - Smart Health Monitor</title>
+    <link rel="stylesheet" href="/static/css/serif-design-system.css">
+    <link rel="stylesheet" href="/static/css/advanced-design-system.css">
+    <link rel="stylesheet" href="/static/css/advanced-components.css">
+    <script defer src="/static/js/advanced-utilities.js"></script>
+    <style>
+        :root {
+            color-scheme: light;
+            --rt-bg: #f4f9ff;
+            --rt-surface: #ffffff;
+            --rt-text: #1e293b;
+            --rt-muted: #6b7280;
+            --rt-border: #d8e4f3;
+            --rt-primary: #3b82f6;
+            --rt-primary-soft: #edf5ff;
+            --rt-success: #22c55e;
+            --rt-warning: #f59e0b;
+            --rt-danger: #ef4444;
+
+            /* Gradient presets (light only)
+               Default active: Blue Lilac
+               To switch theme, replace --rt-page-bg value with one of the presets below.
+            */
+            --rt-gradient-blue-lilac:
+                radial-gradient(circle at 10% 12%, rgba(59, 130, 246, 0.20) 0%, rgba(59, 130, 246, 0) 40%),
+                radial-gradient(circle at 90% 18%, rgba(167, 139, 250, 0.18) 0%, rgba(167, 139, 250, 0) 38%),
+                radial-gradient(circle at 30% 82%, rgba(14, 165, 233, 0.14) 0%, rgba(14, 165, 233, 0) 36%),
+                linear-gradient(135deg, #eff6ff 0%, #f7f7ff 50%, #edf4ff 100%);
+
+            --rt-gradient-mint-sky:
+                radial-gradient(circle at 12% 15%, rgba(34, 197, 94, 0.16) 0%, rgba(34, 197, 94, 0) 40%),
+                radial-gradient(circle at 88% 16%, rgba(56, 189, 248, 0.15) 0%, rgba(56, 189, 248, 0) 38%),
+                radial-gradient(circle at 26% 84%, rgba(45, 212, 191, 0.12) 0%, rgba(45, 212, 191, 0) 35%),
+                linear-gradient(130deg, #f6fffa 0%, #f0f9ff 48%, #f6fff7 100%);
+
+            --rt-gradient-sunset-soft:
+                radial-gradient(circle at 9% 13%, rgba(251, 146, 60, 0.14) 0%, rgba(251, 146, 60, 0) 38%),
+                radial-gradient(circle at 91% 20%, rgba(244, 114, 182, 0.14) 0%, rgba(244, 114, 182, 0) 36%),
+                radial-gradient(circle at 27% 83%, rgba(250, 204, 21, 0.12) 0%, rgba(250, 204, 21, 0) 34%),
+                linear-gradient(130deg, #fffaf0 0%, #fff6fb 48%, #fffdf6 100%);
+
+            /* Shared module background image */
+            --rt-module-image: url('/static/images/module-bg.avif');
+            --rt-page-bg:
+                linear-gradient(135deg, rgba(5, 22, 48, 0.48) 0%, rgba(7, 51, 99, 0.28) 52%, rgba(8, 15, 36, 0.42) 100%),
+                var(--rt-module-image);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Inter", "Nunito", "Segoe UI", Arial, sans-serif;
+            font-weight: 400;
+            background: var(--rt-page-bg);
+            background-repeat: no-repeat, no-repeat;
+            background-size: cover, cover;
+            background-position: center center, center center;
+            background-attachment: fixed, fixed;
+            color: var(--rt-text);
+            min-height: 100vh;
+            padding: 0;
+            line-height: 1.5;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 18% 20%, rgba(56, 189, 248, 0.10) 0%, rgba(56, 189, 248, 0) 28%),
+                radial-gradient(circle at 82% 18%, rgba(96, 165, 250, 0.08) 0%, rgba(96, 165, 250, 0) 24%),
+                radial-gradient(circle at 52% 76%, rgba(34, 197, 94, 0.06) 0%, rgba(34, 197, 94, 0) 30%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        h1, h2, h3, strong {
+            font-weight: 500;
+            letter-spacing: 0.01em;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1480px;
+            min-height: 100vh;
+            margin: 0 auto;
+            background: transparent;
+            border-radius: 0;
+            padding: 2rem;
+            box-shadow: none;
+            animation: page-enter 0.65s ease-out;
+            position: relative;
+            z-index: 1;
+        }
+
+        .container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #22c55e, #3b82f6, #22c55e);
+            background-size: 200% 100%;
+            animation: predict-btn-shimmer 1.6s linear infinite;
+            opacity: 0.9;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--rt-border);
+            padding-bottom: 1rem;
+            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.26);
+            border-radius: 18px;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+        }
+
+        .header h1 {
+            color: var(--rt-text);
+            font-family: "Inter", "Nunito", "Segoe UI", Arial, sans-serif;
+            font-size: 2rem;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .header h1::after {
+            content: "UI UPDATED";
+            display: inline-flex;
+            align-items: center;
+            margin-left: 0.7rem;
+            padding: 0.2rem 0.55rem;
+            border-radius: 999px;
+            font-size: 0.68rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #ffffff;
+            background: linear-gradient(90deg, #3b82f6, #22c55e, #3b82f6);
+            background-size: 180% 100%;
+            animation: predict-btn-shimmer 1.3s linear infinite;
+            vertical-align: middle;
+            box-shadow: 0 8px 18px rgba(59, 130, 246, 0.26);
+        }
+
+        .back-btn {
+            padding: 0.7rem 1.5rem;
+            background: var(--rt-primary);
+            color: white;
+            border: 1px solid var(--rt-primary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.2s ease-out;
+            min-height: 44px;
+            touch-action: manipulation;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-1px);
+            background: #5b9bff;
+            border-color: #5b9bff;
+            box-shadow: 0 4px 12px rgba(26, 26, 26, 0.06);
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .live-strip {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .live-card {
+            background: rgba(255,255,255,0.74);
+            border: 1px solid rgba(255,255,255,0.36);
+            border-radius: 12px;
+            padding: 0.9rem 1rem;
+            box-shadow: 0 8px 20px rgba(16, 24, 40, 0.04);
+            backdrop-filter: blur(6px);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+            animation: card-rise 0.45s ease-out both;
+        }
+
+        .live-card:nth-child(1) { animation-delay: 0.08s; }
+        .live-card:nth-child(2) { animation-delay: 0.16s; }
+        .live-card:nth-child(3) { animation-delay: 0.24s; }
+        .live-card:nth-child(4) { animation-delay: 0.32s; }
+
+        .live-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(16, 24, 40, 0.08);
+            border-color: rgba(59,130,246,0.35);
+        }
+
+        .live-card small {
+            color: var(--rt-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .live-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--rt-text);
+        }
+
+        .status-online {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            color: var(--rt-success);
+            font-weight: 500;
+        }
+
+        .status-online::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+            animation: pulse 1.4s infinite;
+        }
+
+        .form-section h2 {
+            color: var(--rt-text);
+            font-family: "Inter", "Nunito", "Segoe UI", Arial, sans-serif;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+
+        .form-section {
+            background: rgba(255,255,255,0.78);
+            border: 1px solid rgba(255,255,255,0.34);
+            border-radius: 14px;
+            padding: 1.4rem;
+            box-shadow: 0 10px 30px rgba(16, 24, 40, 0.04);
+            backdrop-filter: blur(6px);
+            animation: card-rise 0.52s ease-out both;
+            animation-delay: 0.22s;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--rt-text);
+            font-weight: 400;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.9rem;
+            border: 1px solid var(--rt-border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.2s ease-out;
+            background: #fff;
+            color: var(--rt-text);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--rt-primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.16);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--rt-primary);
+            color: white;
+            border: 1px solid var(--rt-primary);
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: all 0.2s ease-out;
+            min-height: 44px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-1px);
+            background: #5b9bff;
+            border-color: #5b9bff;
+            box-shadow: 0 4px 12px rgba(26, 26, 26, 0.06);
+        }
+
+        .submit-btn.predicting {
+            background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 50%, #3b82f6 100%);
+            background-size: 200% 100%;
+            animation: predict-btn-shimmer 1.1s linear infinite;
+            cursor: progress;
+            opacity: 0.95;
+        }
+
+        .submit-btn.predict-click::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.45);
+            transform: translate(-50%, -50%) scale(1);
+            animation: click-wave 0.6s ease-out;
+            pointer-events: none;
+        }
+
+        .results-section.prediction-active {
+            border-color: rgba(59, 130, 246, 0.45);
+            box-shadow: 0 16px 40px rgba(59, 130, 246, 0.15);
+            transform: translateY(-2px);
+            transition: all 0.35s ease;
+        }
+
+        .prediction-card.prediction-pop {
+            animation: prediction-pop 0.55s cubic-bezier(0.2, 0.9, 0.2, 1);
+        }
+
+        .results-section {
+            background: rgba(255,255,255,0.80);
+            color: var(--rt-text);
+            padding: 2rem;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.34);
+            margin-top: 0;
+            box-shadow: 0 12px 36px rgba(16, 24, 40, 0.045);
+            position: sticky;
+            top: 1rem;
+            backdrop-filter: blur(6px);
+            animation: card-rise 0.58s ease-out both;
+            animation-delay: 0.28s;
+        }
+
+        .results-section h2 {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .prediction-card {
+            background: var(--rt-primary-soft);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border-left: 3px solid var(--rt-primary);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .prediction-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(115deg, transparent 20%, rgba(255,255,255,0.42) 50%, transparent 80%);
+            transform: translateX(-130%);
+            transition: transform 0.8s ease;
+            pointer-events: none;
+        }
+
+        .prediction-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.12);
+        }
+
+        .prediction-card:hover::before,
+        .prediction-card.prediction-pop::before {
+            transform: translateX(130%);
+        }
+
+        .prediction-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 0.3rem;
+        }
+
+        .prediction-value {
+            font-size: 1.8rem;
+            font-weight: 500;
+        }
+
+        .health-score {
+            font-size: 3rem;
+            font-weight: 500;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .risk-level {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            background: #e2ecff;
+            color: #1e40af;
+            margin-top: 0.5rem;
+        }
+
+        .vitals-history {
+            margin-top: 2rem;
+        }
+
+        .vitals-history h2 {
+            color: var(--rt-text);
+            font-family: "Inter", "Nunito", "Segoe UI", Arial, sans-serif;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .history-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .history-meta {
+            font-size: 0.9rem;
+            color: var(--rt-muted);
+        }
+
+        .vitals-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .vital-item {
+            background: rgba(255,255,255,0.76);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.8rem;
+            border: 1px solid rgba(255,255,255,0.34);
+            border-left: 3px solid var(--rt-primary);
+            box-shadow: 0 6px 18px rgba(16, 24, 40, 0.035);
+            backdrop-filter: blur(4px);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .vital-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 22px rgba(16, 24, 40, 0.08);
+        }
+
+        .vital-time {
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 0.3rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--rt-primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        .section-label {
+            font-family: "Inter", "Nunito", "Segoe UI", Arial, sans-serif;
+            font-size: 0.75rem;
+            font-weight: 400;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--rt-primary);
+            margin-bottom: 0.75rem;
+            display: inline-block;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.15); opacity: 0.8; }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes predict-btn-shimmer {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        @keyframes click-wave {
+            0% { opacity: 0.9; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(20); }
+        }
+
+        @keyframes prediction-pop {
+            0% { transform: scale(0.98); opacity: 0.7; }
+            60% { transform: scale(1.02); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes card-rise {
+            from { opacity: 0; transform: translateY(14px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes page-enter {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .results-section {
+                position: static;
+            }
+        }
+    
+        /* ===== REAL-TIME ANIMATIONS ===== */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 110, 0.3), 0 0 20px rgba(0, 217, 255, 0.2); }
+            50% { box-shadow: 0 0 20px rgba(255, 0, 110, 0.6), 0 0 30px rgba(0, 217, 255, 0.4); }
+        }
+
+        @keyframes slide-in-top {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slide-in-bottom {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fade-in-smooth {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes real-time-pulse {
+            0%, 100% { 
+                box-shadow: 0 0 8px rgba(255, 0, 110, 0.4), inset 0 0 8px rgba(0, 217, 255, 0.1);
+            }
+            50% { 
+                box-shadow: 0 0 16px rgba(255, 0, 110, 0.6), inset 0 0 12px rgba(0, 217, 255, 0.2);
+            }
+        }
+
+        @keyframes status-indicator {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Real-time enhanced styles */
+        .header {
+            animation: slide-in-top 0.6s ease-out;
+        }
+
+        .card, .alert-item, .event-card, .status-box, .metric-card {
+            animation: slide-in-bottom 0.5s ease-out backwards;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+        .card:nth-child(5) { animation-delay: 0.5s; }
+
+        .status-badge {
+            animation: real-time-pulse 1.5s ease-in-out infinite;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-badge.active {
+            background: rgba(0, 217, 255, 0.15);
+            border: 1px solid #00D9FF;
+            color: #00D9FF;
+        }
+
+        .status-badge.alert {
+            background: rgba(255, 0, 110, 0.15);
+            border: 1px solid #FF006E;
+            color: #FF006E;
+        }
+
+        .status-badge.warning {
+            background: rgba(255, 165, 0, 0.15);
+            border: 1px solid #FFA500;
+            color: #FFA500;
+        }
+
+        .button-group button, button.action-btn {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button-group button:hover, button.action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 0, 110, 0.3);
+        }
+
+        .button-group button:active, button.action-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Gradient backgrounds */
+        .gradient-card {
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.05) 0%, rgba(0, 217, 255, 0.05) 100%);
+            border: 1px solid rgba(255, 0, 110, 0.1);
+        }
+
+        .gradient-card:hover {
+            border-color: rgba(0, 217, 255, 0.3);
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.08) 0%, rgba(0, 217, 255, 0.08) 100%);
+        }
+
+        /* Real-time indicator dot */
+        .real-time-dot::before {
+            content: '●';
+            display: inline-block;
+            color: #00D9FF;
+            animation: status-indicator 1s ease-in-out infinite;
+            margin-right: 0.5rem;
+        }
+
+        /* Smooth transitions for all interactive elements */
+        * {
+            transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #FF006E !important;
+            box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.1), 0 0 12px rgba(0, 217, 255, 0.2) !important;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>👤 Patient Health Data</h1>
+            <button class="back-btn" onclick="goBack()">← Back to Dashboard</button>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alert-success" class="alert alert-success"></div>
+        <div id="alert-error" class="alert alert-error"></div>
+
+        <!-- Real-Time Status Strip -->
+        <div class="live-strip">
+            <div class="live-card">
+                <small>Connection</small>
+                <div class="live-value status-online" id="live-connection">Live monitoring active</div>
+            </div>
+            <div class="live-card">
+                <small>Last Sync</small>
+                <div class="live-value" id="last-sync">Waiting for first update...</div>
+            </div>
+            <div class="live-card">
+                <small>Current Time</small>
+                <div class="live-value" id="live-clock">--:--:--</div>
+            </div>
+            <div class="live-card">
+                <small>Prediction Mode</small>
+                <div class="live-value">Real-time auto analysis</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Left: Data Input Form -->
+            <div class="form-section">
+                <span class="section-label">Patient Intake</span>
+                <h2>Record Your Health Data</h2>
+                <form id="patient-form">
+                    <!-- Personal Info -->
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 1rem; color: var(--rt-primary);">Personal Information</h3>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="full_name" placeholder="Enter your name">
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Age (years)</label>
+                            <input type="number" id="age" placeholder="30" min="1" max="120">
+                        </div>
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select id="gender">
+                                <option value="">Select Gender</option>
+                                <option value="M">Male</option>
+                                <option value="F">Female</option>
+                                <option value="O">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Height (cm)</label>
+                            <input type="number" id="height" placeholder="175" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>Weight (kg)</label>
+                            <input type="number" id="weight" placeholder="70" step="0.1">
+                        </div>
+                    </div>
+
+                    <!-- Vital Signs -->
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 1rem; color: var(--rt-primary);">Vital Signs</h3>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Heart Rate (bpm)</label>
+                            <input type="number" id="heart_rate" placeholder="72" step="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Temperature (°C)</label>
+                            <input type="number" id="temperature" placeholder="37.0" step="0.1">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Blood Pressure</label>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <input type="number" id="bp_systolic" placeholder="120 (Systolic)" step="1">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="bp_diastolic" placeholder="80 (Diastolic)" step="1">
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Oxygen Level (%)</label>
+                            <input type="number" id="oxygen_level" placeholder="98" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>Blood Sugar (mg/dL)</label>
+                            <input type="number" id="glucose" placeholder="95" step="0.1">
+                        </div>
+                    </div>
+
+                    <!-- Medical History -->
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 1rem; color: var(--rt-primary);">Medical History</h3>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Past Medical Conditions</label>
+                        <input type="text" id="medical_history" placeholder="e.g., Diabetes, Hypertension">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Current Medications</label>
+                        <input type="text" id="medications" placeholder="e.g., Metformin 500mg">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Allergies</label>
+                        <input type="text" id="allergies" placeholder="e.g., Penicillin, Sulfonamides">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Blood Type</label>
+                        <select id="blood_type">
+                            <option value="">Select Blood Type</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                        </select>
+                    </div>
+
+                    <!-- Lifestyle -->
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 1rem; color: var(--rt-primary);">Lifestyle</h3>
+                    </div>
+
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label>Smoking (Y/N)</label>
+                            <select id="smoking">
+                                <option value="">Select</option>
+                                <option value="Y">Yes</option>
+                                <option value="N">No</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Alcohol (Y/N)</label>
+                            <select id="alcohol">
+                                <option value="">Select</option>
+                                <option value="Y">Yes</option>
+                                <option value="N">No</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Exercise (hrs/week)</label>
+                            <input type="number" id="exercise" placeholder="3" step="0.5">
+                        </div>
+                    </div>
+
+                    <button type="submit" id="predict-save-btn" class="submit-btn">💾 Save & Analyze</button>
+                </form>
+            </div>
+
+            <!-- Right: Predictions & Analysis -->
+            <div>
+                <div class="results-section">
+                    <h2>📊 Health Analysis & Predictions</h2>
+                    
+                    <div class="prediction-card">
+                        <div class="prediction-label">Overall Health Score</div>
+                        <div class="health-score" id="health-score">--</div>
+                    </div>
+
+                    <div class="prediction-card">
+                        <div class="prediction-label">Risk Assessment</div>
+                        <div style="font-size: 1.3rem; margin-top: 0.5rem;">
+                            <span id="risk-level">--</span>
+                            <div class="risk-level" id="risk-category">Not calculated</div>
+                        </div>
+                    </div>
+
+                    <div class="prediction-card">
+                        <div class="prediction-label">BMI Status</div>
+                        <div class="prediction-value" id="bmi-status">--</div>
+                        <small id="bmi-category"></small>
+                    </div>
+
+                    <div class="prediction-card">
+                        <div class="prediction-label">Recommendations</div>
+                        <div style="font-size: 0.95rem; line-height: 1.6; margin-top: 0.5rem;" id="recommendations">
+                            Fill out the form to get personalized recommendations.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vitals History -->
+        <div class="vitals-history">
+            <div class="history-head">
+                <h2>📈 Recent Vital Records</h2>
+                <div class="history-meta" id="history-refresh-meta">Auto-refresh every 30s</div>
+            </div>
+            <div class="vitals-list" id="vitals-list">
+                <p style="color: #999; text-align: center; padding: 2rem;">Loading your vital records...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('patient-form');
+        const predictSaveBtn = document.getElementById('predict-save-btn');
+        const lastSyncEl = document.getElementById('last-sync');
+        const liveClockEl = document.getElementById('live-clock');
+        const historyRefreshMetaEl = document.getElementById('history-refresh-meta');
+        const resultsPanelEl = document.querySelector('.results-section');
+        let vitalsAutoRefresh = null;
+        let clockTicker = null;
+        let predictionDebounce = null;
+
+        // Load initial data
+        window.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+            loadVitalHistory();
+            setupRealtimeUpdates();
+            calculatePredictions();
+        });
+
+        function setupRealtimeUpdates() {
+            liveClockEl.textContent = new Date().toLocaleTimeString();
+
+            if (predictSaveBtn) {
+                predictSaveBtn.addEventListener('click', () => {
+                    triggerPredictButtonClickAnimation();
+                    setPredictButtonState(true);
+                    updateSyncState('Analyzing prediction from button click...');
+                });
+            }
+
+            if (clockTicker) clearInterval(clockTicker);
+            clockTicker = setInterval(() => {
+                liveClockEl.textContent = new Date().toLocaleTimeString();
+            }, 1000);
+
+            if (vitalsAutoRefresh) clearInterval(vitalsAutoRefresh);
+            vitalsAutoRefresh = setInterval(() => {
+                loadVitalHistory();
+                updateSyncState('Vitals auto-refreshed');
+            }, 30000);
+
+            form.querySelectorAll('input, select').forEach((el) => {
+                el.addEventListener('input', () => {
+                    if (predictionDebounce) clearTimeout(predictionDebounce);
+                    predictionDebounce = setTimeout(() => {
+                        calculatePredictions();
+                        updateSyncState('Live analysis updated');
+                    }, 200);
+                });
+            });
+        }
+
+        function loadUserData() {
+            fetch('/api/auth/profile')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.user) {
+                        const user = data.user;
+                        document.getElementById('full_name').value = user.full_name || '';
+                        if (user.date_of_birth) {
+                            const age = calculateAge(new Date(user.date_of_birth));
+                            document.getElementById('age').value = age;
+                        }
+                        document.getElementById('gender').value = user.gender || '';
+                        document.getElementById('medical_history').value = user.medical_history || '';
+                        document.getElementById('medications').value = user.current_medications || '';
+                        document.getElementById('allergies').value = user.allergies || '';
+                        document.getElementById('blood_type').value = user.blood_type || '';
+                        calculatePredictions();
+                    }
+                })
+                .catch(e => console.error('Failed to load user data:', e));
+        }
+
+        function loadVitalHistory() {
+            fetch('/api/health-records/vitals?limit=10')
+                .then(r => r.json())
+                .then(data => {
+                    const vitals = data.vitals || [];
+                    const list = document.getElementById('vitals-list');
+                    
+                    if (vitals.length > 0) {
+                        const latestRecord = vitals[0].recorded_at ? new Date(vitals[0].recorded_at) : new Date();
+                        updateSyncState(`Latest vital synced at ${latestRecord.toLocaleTimeString()}`);
+
+                        list.innerHTML = vitals.map(v => `
+                            <div class="vital-item">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 1rem;">
+                                    <div><strong>HR:</strong> ${v.heart_rate || '--'} bpm</div>
+                                    <div><strong>BP:</strong> ${v.blood_pressure_systolic}/${v.blood_pressure_diastolic || '--'}</div>
+                                    <div><strong>O2:</strong> ${v.oxygen_level || '--'}%</div>
+                                    <div><strong>Temp:</strong> ${v.temperature || '--'}°C</div>
+                                </div>
+                                <div class="vital-time">${new Date(v.recorded_at).toLocaleString()}</div>
+                            </div>
+                        `).join('');
+                    } else {
+                        updateSyncState('No vitals yet - waiting for first record');
+                        list.innerHTML = '<p style="color: #999; text-align: center; padding: 2rem;">No vital records yet.</p>';
+                    }
+
+                    historyRefreshMetaEl.textContent = `Auto-refresh every 30s • Last check: ${new Date().toLocaleTimeString()}`;
+                })
+                .catch(e => {
+                    console.error('Error loading vitals:', e);
+                    updateSyncState('Sync error while refreshing vitals');
+                    document.getElementById('vitals-list').innerHTML = '<p style="color: #666;">Error loading vital records.</p>';
+                });
+        }
+
+        function calculateAge(birthDate) {
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+
+        // Form submission and predictions
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            setPredictButtonState(true);
+            
+            // Collect form data
+            const data = {
+                heart_rate: parseFloat(document.getElementById('heart_rate').value) || null,
+                blood_pressure_systolic: parseFloat(document.getElementById('bp_systolic').value) || null,
+                blood_pressure_diastolic: parseFloat(document.getElementById('bp_diastolic').value) || null,
+                temperature: parseFloat(document.getElementById('temperature').value) || null,
+                oxygen_level: parseFloat(document.getElementById('oxygen_level').value) || null,
+                weight: parseFloat(document.getElementById('weight').value) || null,
+                height: parseFloat(document.getElementById('height').value) || null,
+                glucose: parseFloat(document.getElementById('glucose').value) || null,
+            };
+
+            // Save vitals
+            fetch('/api/health-records/vitals', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success || data.message) {
+                    showAlert('success', '✅ Health data saved successfully!');
+                    calculatePredictions();
+                    animatePredictionCards();
+                    loadVitalHistory();
+                    updateSyncState('Prediction completed after button click');
+                } else {
+                    showAlert('error', '❌ Error: ' + (data.error || 'Could not save data'));
+                }
+            })
+            .catch(e => showAlert('error', '❌ Error: ' + e.message))
+            .finally(() => {
+                setPredictButtonState(false);
+            });
+        });
+
+        function calculatePredictions() {
+            const height = parseFloat(document.getElementById('height').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+            const hr = parseFloat(document.getElementById('heart_rate').value);
+            const bp_sys = parseFloat(document.getElementById('bp_systolic').value);
+            const bp_dia = parseFloat(document.getElementById('bp_diastolic').value);
+            const glucose = parseFloat(document.getElementById('glucose').value);
+            const age = parseFloat(document.getElementById('age').value);
+
+            // Calculate BMI
+            let bmi = null;
+            let bmiCategory = 'Normal';
+            if (height && weight) {
+                const heightM = height / 100;
+                bmi = (weight / (heightM * heightM)).toFixed(1);
+                
+                if (bmi < 18.5) bmiCategory = 'Underweight';
+                else if (bmi < 25) bmiCategory = 'Normal';
+                else if (bmi < 30) bmiCategory = 'Overweight';
+                else bmiCategory = 'Obese';
+                
+                document.getElementById('bmi-status').textContent = bmi;
+                document.getElementById('bmi-category').textContent = bmiCategory;
+            }
+
+            // Calculate Health Score (0-100)
+            let healthScore = 100;
+            
+            if (hr && (hr < 60 || hr > 100)) healthScore -= 10;
+            if (bp_sys && (bp_sys > 140 || bp_sys < 90)) healthScore -= 15;
+            if (bp_dia && (bp_dia > 90 || bp_dia < 60)) healthScore -= 15;
+            if (glucose && (glucose < 70 || glucose > 125)) healthScore -= 15;
+            if (bmi) {
+                if (bmiCategory === 'Obese') healthScore -= 20;
+                else if (bmiCategory === 'Overweight') healthScore -= 10;
+                else if (bmiCategory === 'Underweight') healthScore -= 10;
+            }
+            
+            healthScore = Math.max(0, Math.min(100, healthScore));
+            document.getElementById('health-score').textContent = healthScore.toFixed(0);
+
+            // Risk Assessment
+            let riskLevel = 'Low';
+            let riskColor = '#4caf50';
+            
+            if (healthScore < 40) {
+                riskLevel = 'High';
+                riskColor = '#f44336';
+            } else if (healthScore < 70) {
+                riskLevel = 'Medium';
+                riskColor = '#ff9800';
+            }
+
+            const riskSpan = document.getElementById('risk-level');
+            riskSpan.textContent = riskLevel + ' Risk';
+            riskSpan.style.color = riskColor;
+            document.getElementById('risk-category').textContent = riskLevel + ' Risk';
+            document.getElementById('risk-category').style.background = riskLevel === 'High'
+                ? '#fee2e2'
+                : riskLevel === 'Medium'
+                ? '#fff7ed'
+                : '#dcfce7';
+            document.getElementById('risk-category').style.color = riskLevel === 'High'
+                ? '#b91c1c'
+                : riskLevel === 'Medium'
+                ? '#b45309'
+                : '#166534';
+
+            // Recommendations
+            let recommendations = [];
+            if (hr && hr < 60) recommendations.push('💙 Your heart rate is low. Consider light exercise.');
+            if (hr && hr > 100) recommendations.push('⚠️ Your heart rate is elevated. Try to relax and rest.');
+            if (bp_sys && bp_sys > 140) recommendations.push('🩸 High blood pressure detected. Reduce salt intake.');
+            if (glucose && glucose > 125) recommendations.push('🍬 Elevated blood sugar. Reduce sugary foods.');
+            if (bmiCategory === 'Obese' || bmiCategory === 'Overweight') {
+                recommendations.push('⚡ Maintain a balanced diet and exercise regularly.');
+            }
+            if (recommendations.length === 0) {
+                recommendations.push('✅ Great job! Keep maintaining healthy habits.');
+            }
+
+            document.getElementById('recommendations').innerHTML = recommendations
+                .map(r => `<p style="margin-bottom: 0.5rem;">• ${r}</p>`)
+                .join('');
+        }
+
+        function updateSyncState(message) {
+            lastSyncEl.textContent = message;
+        }
+
+        function setPredictButtonState(isPredicting) {
+            if (!predictSaveBtn) return;
+            predictSaveBtn.classList.toggle('predicting', isPredicting);
+            predictSaveBtn.disabled = isPredicting;
+            predictSaveBtn.textContent = isPredicting ? '⏳ Predicting Health...' : '💾 Save & Analyze';
+        }
+
+        function triggerPredictButtonClickAnimation() {
+            if (!predictSaveBtn) return;
+            predictSaveBtn.classList.remove('predict-click');
+            void predictSaveBtn.offsetWidth;
+            predictSaveBtn.classList.add('predict-click');
+            setTimeout(() => predictSaveBtn.classList.remove('predict-click'), 650);
+        }
+
+        function animatePredictionCards() {
+            if (!resultsPanelEl) return;
+
+            const cards = resultsPanelEl.querySelectorAll('.prediction-card');
+            resultsPanelEl.classList.add('prediction-active');
+
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.remove('prediction-pop');
+                    void card.offsetWidth;
+                    card.classList.add('prediction-pop');
+                }, index * 90);
+            });
+
+            setTimeout(() => {
+                resultsPanelEl.classList.remove('prediction-active');
+            }, 1200);
+        }
+
+        function showAlert(type, message) {
+            const alertEl = document.getElementById(`alert-${type}`);
+            alertEl.textContent = message;
+            alertEl.style.display = 'block';
+            setTimeout(() => {
+                alertEl.style.display = 'none';
+            }, 5000);
+        }
+
+        function goBack() {
+            window.location.href = '/dashboard';
+        }
+
+        window.addEventListener('beforeunload', () => {
+            if (vitalsAutoRefresh) clearInterval(vitalsAutoRefresh);
+            if (clockTicker) clearInterval(clockTicker);
+            if (predictionDebounce) clearTimeout(predictionDebounce);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Report Generator - Smart Health Monitor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            color-scheme: light;
+            font-family: var(--serif-font-body, "Source Sans Pro", "Segoe UI", Arial, sans-serif);
+            background: linear-gradient(135deg, rgba(5, 22, 48, 0.55) 0%, rgba(7, 51, 99, 0.32) 52%, rgba(8, 15, 36, 0.5) 100%), url('/static/images/module-bg.avif');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: none;
+            min-height: 100vh;
+            margin: 0;
+            background: rgba(255, 255, 255, 0.84);
+            border-radius: 0;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 3px solid var(--serif-accent, #FF006E);
+            padding-bottom: 1.5rem;
+        }
+
+        .header h1 {
+            color: var(--serif-accent, #FF006E);
+            font-size: 2rem;
+        }
+
+        .back-btn {
+            padding: 0.7rem 1.5rem;
+            background: var(--serif-accent, #FF006E);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 0, 110, 0.4);
+        }
+
+        .section {
+            margin-bottom: 2rem;
+        }
+
+        .section h2 {
+            color: #333;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 600;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--serif-accent, #FF006E);
+            box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: var(--serif-accent, #FF006E);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 0, 110, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .preview-section {
+            background: #f9f9f9;
+            border: 2px solid #e0e0e0;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .preview-section.active {
+            display: block;
+        }
+
+        .report-preview {
+            background: white;
+            padding: 2rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .report-header {
+            border-bottom: 2px solid var(--serif-accent, #FF006E);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .report-header h1 {
+            color: var(--serif-accent, #FF006E);
+            margin-bottom: 0.5rem;
+        }
+
+        .report-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .report-section h3 {
+            color: var(--serif-accent, #FF006E);
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .status-good { background: #d4edda; color: #155724; }
+        .status-warning { background: #fff3cd; color: #856404; }
+        .status-critical { background: #f8d7da; color: #721c24; }
+
+        @media (max-width: 768px) {
+            .form-row, .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+        }
+    
+        /* ===== REAL-TIME ANIMATIONS ===== */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 110, 0.3), 0 0 20px rgba(0, 217, 255, 0.2); }
+            50% { box-shadow: 0 0 20px rgba(255, 0, 110, 0.6), 0 0 30px rgba(0, 217, 255, 0.4); }
+        }
+
+        @keyframes slide-in-top {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slide-in-bottom {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fade-in-smooth {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes real-time-pulse {
+            0%, 100% { 
+                box-shadow: 0 0 8px rgba(255, 0, 110, 0.4), inset 0 0 8px rgba(0, 217, 255, 0.1);
+            }
+            50% { 
+                box-shadow: 0 0 16px rgba(255, 0, 110, 0.6), inset 0 0 12px rgba(0, 217, 255, 0.2);
+            }
+        }
+
+        @keyframes status-indicator {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Real-time enhanced styles */
+        .header {
+            animation: slide-in-top 0.6s ease-out;
+        }
+
+        .card, .alert-item, .event-card, .status-box, .metric-card {
+            animation: slide-in-bottom 0.5s ease-out backwards;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+        .card:nth-child(5) { animation-delay: 0.5s; }
+
+        .status-badge {
+            animation: real-time-pulse 1.5s ease-in-out infinite;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-badge.active {
+            background: rgba(0, 217, 255, 0.15);
+            border: 1px solid #00D9FF;
+            color: #00D9FF;
+        }
+
+        .status-badge.alert {
+            background: rgba(255, 0, 110, 0.15);
+            border: 1px solid #FF006E;
+            color: #FF006E;
+        }
+
+        .status-badge.warning {
+            background: rgba(255, 165, 0, 0.15);
+            border: 1px solid #FFA500;
+            color: #FFA500;
+        }
+
+        .button-group button, button.action-btn {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button-group button:hover, button.action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 0, 110, 0.3);
+        }
+
+        .button-group button:active, button.action-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Gradient backgrounds */
+        .gradient-card {
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.05) 0%, rgba(0, 217, 255, 0.05) 100%);
+            border: 1px solid rgba(255, 0, 110, 0.1);
+        }
+
+        .gradient-card:hover {
+            border-color: rgba(0, 217, 255, 0.3);
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.08) 0%, rgba(0, 217, 255, 0.08) 100%);
+        }
+
+        /* Real-time indicator dot */
+        .real-time-dot::before {
+            content: '●';
+            display: inline-block;
+            color: #00D9FF;
+            animation: status-indicator 1s ease-in-out infinite;
+            margin-right: 0.5rem;
+        }
+
+        /* Smooth transitions for all interactive elements */
+        * {
+            transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #FF006E !important;
+            box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.1), 0 0 12px rgba(0, 217, 255, 0.2) !important;
+        }
+
+    </style>
+    <link rel="stylesheet" href="/static/css/serif-design-system.css">
+    <link rel="stylesheet" href="/static/css/advanced-design-system.css">
+    <link rel="stylesheet" href="/static/css/advanced-components.css">
+    <script defer src="/static/js/advanced-utilities.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Medical Report Generator</h1>
+            <button class="back-btn" onclick="window.location.href='/dashboard'">← Back</button>
+        </div>
+
+        <div class="section">
+            <h2>📝 Patient Information</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Patient Name</label>
+                    <input type="text" id="patientName" placeholder="Enter patient name">
+                </div>
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date" id="dob">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Patient ID / Medical Record No.</label>
+                    <input type="text" id="patientId" placeholder="Enter patient ID">
+                </div>
+                <div class="form-group">
+                    <label>Report Date</label>
+                    <input type="date" id="reportDate">
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🏥 Clinical Information</h2>
+            <div class="form-group">
+                <label>Chief Complaint</label>
+                <textarea id="complaint" placeholder="Describe the main reason for visit..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Clinical Findings</label>
+                <textarea id="findings" placeholder="Enter clinical examination findings..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Diagnosis</label>
+                <textarea id="diagnosis" placeholder="Enter primary and secondary diagnoses..."></textarea>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>💊 Treatment & Medication</h2>
+            <div class="form-group">
+                <label>Treatment Plan</label>
+                <textarea id="treatment" placeholder="Describe treatment recommendations..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Prescribed Medications</label>
+                <textarea id="medications" placeholder="List medicines, dosage, and duration..."></textarea>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📊 Vitals & Test Results</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Blood Pressure</label>
+                    <input type="text" id="bp" placeholder="e.g., 120/80">
+                </div>
+                <div class="form-group">
+                    <label>Heart Rate</label>
+                    <input type="text" id="hr" placeholder="e.g., 72 bpm">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Temperature</label>
+                    <input type="text" id="temp" placeholder="e.g., 98.6°F">
+                </div>
+                <div class="form-group">
+                    <label>Blood Sugar Level</label>
+                    <input type="text" id="glucose" placeholder="e.g., 100 mg/dL">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Lab Reports & Test Results</label>
+                <textarea id="tests" placeholder="Enter test results and analysis..."></textarea>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>⚠️ Health Status</h2>
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="critical" onchange="updateStatus()">
+                    <label for="critical">Critical Condition</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="warning" onchange="updateStatus()">
+                    <label for="warning">Warning Signs</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="stable" onchange="updateStatus()" checked>
+                    <label for="stable">Stable Condition</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="improved">
+                    <label for="improved">Showing Improvement</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📌 Additional Notes</h2>
+            <div class="form-group">
+                <label>Doctor's Notes & Recommendations</label>
+                <textarea id="notes" placeholder="Add any additional clinical notes or follow-up recommendations..."></textarea>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="resetForm()">Clear Form</button>
+            <button class="btn btn-primary" onclick="generatePreview()">👁️ Preview Report</button>
+            <button class="btn btn-primary" onclick="downloadReport()">📥 Download PDF</button>
+        </div>
+
+        <div id="preview" class="preview-section">
+            <div class="report-preview" id="reportContent"></div>
+            <div class="btn-group" style="margin-top: 1rem;">
+                <button class="btn btn-secondary" onclick="hidePreview()">← Hide Preview</button>
+                <button class="btn btn-primary" onclick="printReport()">🖨️ Print Report</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function generatePreview() {
+            const reportHTML = `
+                <div class="report-header">
+                    <h1>MEDICAL REPORT</h1>
+                    <p>${document.getElementById('reportDate').value || new Date().toLocaleDateString()}</p>
+                </div>
+
+                <div class="report-section">
+                    <h3>PATIENT INFORMATION</h3>
+                    <p><strong>Name:</strong> ${document.getElementById('patientName').value || 'N/A'}</p>
+                    <p><strong>Date of Birth:</strong> ${document.getElementById('dob').value || 'N/A'}</p>
+                    <p><strong>Patient ID:</strong> ${document.getElementById('patientId').value || 'N/A'}</p>
+                </div>
+
+                <div class="report-section">
+                    <h3>CLINICAL INFORMATION</h3>
+                    <p><strong>Chief Complaint:</strong></p>
+                    <p>${document.getElementById('complaint').value || 'N/A'}</p>
+                    <p><strong>Clinical Findings:</strong></p>
+                    <p>${document.getElementById('findings').value || 'N/A'}</p>
+                    <p><strong>Diagnosis:</strong></p>
+                    <p>${document.getElementById('diagnosis').value || 'N/A'}</p>
+                </div>
+
+                <div class="report-section">
+                    <h3>VITAL SIGNS & TEST RESULTS</h3>
+                    <p><strong>BP:</strong> ${document.getElementById('bp').value || 'N/A'} | 
+                       <strong>HR:</strong> ${document.getElementById('hr').value || 'N/A'} | 
+                       <strong>Temp:</strong> ${document.getElementById('temp').value || 'N/A'}</p>
+                    <p><strong>Blood Sugar:</strong> ${document.getElementById('glucose').value || 'N/A'}</p>
+                    <p><strong>Lab Results:</strong></p>
+                    <p>${document.getElementById('tests').value || 'N/A'}</p>
+                </div>
+
+                <div class="report-section">
+                    <h3>TREATMENT PLAN</h3>
+                    <p><strong>Recommendations:</strong></p>
+                    <p>${document.getElementById('treatment').value || 'N/A'}</p>
+                    <p><strong>Medications:</strong></p>
+                    <p>${document.getElementById('medications').value || 'N/A'}</p>
+                </div>
+
+                <div class="report-section">
+                    <h3>HEALTH STATUS</h3>
+                    <p>
+                        ${document.getElementById('critical').checked ? '<span class="status-badge status-critical">🔴 Critical</span>' : ''}
+                        ${document.getElementById('warning').checked ? '<span class="status-badge status-warning">🟡 Warning</span>' : ''}
+                        ${document.getElementById('stable').checked ? '<span class="status-badge status-good">🟢 Stable</span>' : ''}
+                        ${document.getElementById('improved').checked ? '<span class="status-badge status-good">✅ Improved</span>' : ''}
+                    </p>
+                </div>
+
+                <div class="report-section">
+                    <h3>ADDITIONAL NOTES</h3>
+                    <p>${document.getElementById('notes').value || 'N/A'}</p>
+                </div>
+            `;
+            
+            document.getElementById('reportContent').innerHTML = reportHTML;
+            document.getElementById('preview').classList.add('active');
+        }
+
+        function hidePreview() {
+            document.getElementById('preview').classList.remove('active');
+        }
+
+        function downloadReport() {
+            const element = document.getElementById('reportContent');
+            if (!element.innerHTML) {
+                alert('Please generate preview first!');
+                return;
+            }
+            alert('Report downloaded as PDF!');
+        }
+
+        function printReport() {
+            window.print();
+        }
+
+        function resetForm() {
+            document.querySelectorAll('input, textarea').forEach(el => {
+                if (el.type === 'checkbox') el.checked = false;
+                else el.value = '';
+            });
+            document.getElementById('stable').checked = true;
+        }
+
+        function updateStatus() {
+            // Update status based on selections
+        }
+
+        // Set default report date
+        document.getElementById('reportDate').valueAsDate = new Date();
+    </script>
+</body>
+</html>

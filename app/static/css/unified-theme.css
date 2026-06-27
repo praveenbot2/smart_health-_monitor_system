@@ -1,0 +1,247 @@
+/* Unified Dual Real-Time Color Theme - Light Mode Only */
+/* No Dark Mode - Vibrant Dual Colors with Animations */
+
+:root {
+    /* Primary Dual Colors - Vibrant Magenta & Cyan */
+    --color-primary-1: #FF006E;      /* Vibrant Magenta */
+    --color-primary-2: #00D9FF;      /* Bright Cyan */
+    --color-primary-3: #FF3BA0;      /* Secondary Magenta */
+    --color-primary-4: #00F5FF;      /* Enhanced Cyan */
+    
+    /* Accent Colors */
+    --color-accent-warm: #FF6B9D;    /* Warm Magenta */
+    --color-accent-cool: #00E5E5;    /* Cool Cyan */
+    --color-success: #00D084;        /* Emerald Green */
+    --color-warning: #FFB800;        /* Amber */
+    --color-danger: #FF4757;         /* Red */
+    --color-info: #0099FF;           /* Blue */
+    
+    /* Light Mode - Light Backgrounds Only */
+    --bg-primary: #FFFFFF;           /* Pure White */
+    --bg-secondary: #F5F5F7;         /* Off White */
+    --bg-tertiary: #EBEBF0;          /* Light Gray */
+    --bg-accent-light-1: #FFF0F7;    /* Light Magenta Background */
+    --bg-accent-light-2: #E8FFFE;    /* Light Cyan Background */
+    --bg-gradient: linear-gradient(135deg, rgba(255, 0, 110, 0.08) 0%, rgba(0, 217, 255, 0.08) 100%);
+    
+    /* Text Colors */
+    --text-primary: #1A1A2E;         /* Charcoal */
+    --text-secondary: #4A4A68;       /* Medium Gray */
+    --text-tertiary: #8A8A9E;        /* Light Gray */
+    --text-light: #FFFFFF;           /* White */
+    
+    /* Borders & Dividers */
+    --border-light: rgba(255, 0, 110, 0.1);
+    --border-medium: rgba(0, 217, 255, 0.15);
+    --border-strong: rgba(0, 0, 0, 0.1);
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(255, 0, 110, 0.06);
+    --shadow-md: 0 4px 16px rgba(0, 217, 255, 0.08);
+    --shadow-lg: 0 12px 32px rgba(255, 0, 110, 0.1), 0 8px 24px rgba(0, 217, 255, 0.08);
+    --shadow-xl: 0 20px 48px rgba(255, 0, 110, 0.12), 0 12px 32px rgba(0, 217, 255, 0.1);
+}
+
+/* Animated Gradients */
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes colorPulse {
+    0% {
+        box-shadow: 0 0 20px rgba(255, 0, 110, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(0, 217, 255, 0.4);
+    }
+    100% {
+        box-shadow: 0 0 20px rgba(255, 0, 110, 0.4);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+@keyframes floatAnimation {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-10px) rotate(2deg);
+    }
+}
+
+@keyframes glow {
+    0%, 100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Reusable Gradient Classes */
+.gradient-primary {
+    background: linear-gradient(135deg, var(--color-primary-1) 0%, var(--color-primary-2) 100%);
+    background-size: 200% 200%;
+}
+
+.gradient-primary-animated {
+    background: linear-gradient(135deg, var(--color-primary-1) 0%, var(--color-primary-2) 50%, var(--color-primary-1) 100%);
+    background-size: 200% 200%;
+    animation: gradientShift 8s ease infinite;
+}
+
+.gradient-primary-reverse {
+    background: linear-gradient(135deg, var(--color-primary-2) 0%, var(--color-primary-1) 100%);
+    background-size: 200% 200%;
+}
+
+.gradient-soft-1 {
+    background: linear-gradient(135deg, rgba(255, 0, 110, 0.1) 0%, rgba(0, 217, 255, 0.1) 100%);
+}
+
+.gradient-soft-2 {
+    background: linear-gradient(135deg, var(--bg-accent-light-1) 0%, var(--bg-accent-light-2) 100%);
+}
+
+/* Reusable Component Styles */
+.button-primary {
+    background: linear-gradient(135deg, var(--color-primary-1) 0%, var(--color-primary-2) 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 24px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(255, 0, 110, 0.3);
+}
+
+.button-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 217, 255, 0.4);
+}
+
+.button-primary:active {
+    transform: translateY(0);
+}
+
+.card-modern {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 250, 253, 0.8) 100%);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.card-modern:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+    border-color: var(--border-medium);
+}
+
+.badge-primary {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(255, 0, 110, 0.15) 0%, rgba(0, 217, 255, 0.15) 100%);
+    color: var(--color-primary-1);
+    border: 1px solid rgba(255, 0, 110, 0.3);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.input-modern {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(250, 245, 250, 0.8) 100%);
+    border: 2px solid var(--border-light);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.input-modern:focus {
+    outline: none;
+    border-color: var(--color-primary-2);
+    box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.1);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 245, 250, 0.95) 100%);
+}
+
+.header-main {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(250, 245, 253, 0.95) 100%);
+    border-bottom: 2px solid;
+    border-image: linear-gradient(90deg, var(--color-primary-1) 0%, var(--color-primary-2) 100%) 1;
+    box-shadow: 0 4px 20px rgba(255, 0, 110, 0.08);
+    backdrop-filter: blur(15px);
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, var(--color-primary-1) 0%, var(--color-primary-2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.accent-glow {
+    animation: colorPulse 3s ease-in-out infinite;
+}
+
+.floating {
+    animation: floatAnimation 4s ease-in-out infinite;
+}
+
+/* No Dark Mode - Force Light Theme */
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: light;
+    }
+    
+    body {
+        background: var(--bg-primary) !important;
+        color: var(--text-primary) !important;
+    }
+}
+
+/* Smooth Transitions */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--color-primary-1), var(--color-primary-2));
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--color-primary-2), var(--color-primary-1));
+}

@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Records - Smart Health Monitor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            color-scheme: light;
+            font-family: var(--serif-font-body, "Source Sans Pro", "Segoe UI", Arial, sans-serif);
+            background: linear-gradient(135deg, rgba(5, 22, 48, 0.55) 0%, rgba(7, 51, 99, 0.32) 52%, rgba(8, 15, 36, 0.5) 100%), url('/static/images/module-bg.avif');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: none;
+            min-height: 100vh;
+            margin: 0;
+            background: rgba(255, 255, 255, 0.84);
+            border-radius: 0;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 1rem;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2rem;
+        }
+
+        .back-btn {
+            padding: 0.7rem 1.5rem;
+            background: var(--serif-accent, #FF006E);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 0, 110, 0.4);
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-input {
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--serif-accent, #FF006E);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 1rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: var(--serif-accent, #FF006E);
+            border-bottom-color: var(--serif-accent, #FF006E);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .records-timeline {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .records-timeline::before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e0e0e0;
+        }
+
+        .record-item {
+            margin-bottom: 2.5rem;
+            padding-left: 120px;
+            position: relative;
+        }
+
+        .record-date {
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 100px;
+            text-align: right;
+            font-size: 0.85rem;
+            color: #999;
+            font-weight: 500;
+        }
+
+        .record-dot {
+            position: absolute;
+            left: 15px;
+            top: 0.8rem;
+            width: 30px;
+            height: 30px;
+            background: white;
+            border: 3px solid var(--serif-accent, #FF006E);
+            border-radius: 50%;
+        }
+
+        .record-card {
+            background: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--serif-accent, #FF006E);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .record-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .record-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .detail-item {
+            background: white;
+            padding: 0.8rem;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: #999;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+            display: block;
+        }
+
+        .detail-value {
+            color: #333;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .badge-normal {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-alert {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .records-list {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .record-row {
+            background: white;
+            border: 1px solid #e0e0e0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .record-row:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .record-info {
+            flex: 1;
+        }
+
+        .record-info h3 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .record-meta {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .btn-view {
+            background: var(--serif-accent, #FF006E);
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: var(--serif-accent-secondary, #4d7cff);
+        }
+
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #d32f2f;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #999;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--serif-accent, #FF006E);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .records-timeline::before {
+                left: 15px;
+            }
+            .record-dot {
+                left: 0;
+            }
+            .record-item {
+                padding-left: 60px;
+            }
+            .record-date {
+                width: 50px;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 2rem auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            background: var(--serif-accent, #FF006E);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            color-scheme: light;
+            padding: 2rem;
+        }
+
+        .info-section {
+            margin-bottom: 2rem;
+        }
+
+        .info-section h3 {
+            color: var(--serif-accent, #FF006E);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0.5rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .info-item {
+            background: #f9f9f9;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--serif-accent, #FF006E);
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.3rem;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 0.3rem;
+        }
+
+        .status-normal {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-elevated, .status-low {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-high, .status-critical {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-unknown {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        .modal-actions {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn-modal {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-modal-primary {
+            background: var(--serif-accent, #FF006E);
+            color: white;
+        }
+
+        .btn-modal-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-modal:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+    
+        /* ===== REAL-TIME ANIMATIONS ===== */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 110, 0.3), 0 0 20px rgba(0, 217, 255, 0.2); }
+            50% { box-shadow: 0 0 20px rgba(255, 0, 110, 0.6), 0 0 30px rgba(0, 217, 255, 0.4); }
+        }
+
+        @keyframes slide-in-top {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slide-in-bottom {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fade-in-smooth {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes real-time-pulse {
+            0%, 100% { 
+                box-shadow: 0 0 8px rgba(255, 0, 110, 0.4), inset 0 0 8px rgba(0, 217, 255, 0.1);
+            }
+            50% { 
+                box-shadow: 0 0 16px rgba(255, 0, 110, 0.6), inset 0 0 12px rgba(0, 217, 255, 0.2);
+            }
+        }
+
+        @keyframes status-indicator {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Real-time enhanced styles */
+        .header {
+            animation: slide-in-top 0.6s ease-out;
+        }
+
+        .card, .alert-item, .event-card, .status-box, .metric-card {
+            animation: slide-in-bottom 0.5s ease-out backwards;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+        .card:nth-child(5) { animation-delay: 0.5s; }
+
+        .status-badge {
+            animation: real-time-pulse 1.5s ease-in-out infinite;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-badge.active {
+            background: rgba(0, 217, 255, 0.15);
+            border: 1px solid #00D9FF;
+            color: #00D9FF;
+        }
+
+        .status-badge.alert {
+            background: rgba(255, 0, 110, 0.15);
+            border: 1px solid #FF006E;
+            color: #FF006E;
+        }
+
+        .status-badge.warning {
+            background: rgba(255, 165, 0, 0.15);
+            border: 1px solid #FFA500;
+            color: #FFA500;
+        }
+
+        .button-group button, button.action-btn {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button-group button:hover, button.action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 0, 110, 0.3);
+        }
+
+        .button-group button:active, button.action-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Gradient backgrounds */
+        .gradient-card {
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.05) 0%, rgba(0, 217, 255, 0.05) 100%);
+            border: 1px solid rgba(255, 0, 110, 0.1);
+        }
+
+        .gradient-card:hover {
+            border-color: rgba(0, 217, 255, 0.3);
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.08) 0%, rgba(0, 217, 255, 0.08) 100%);
+        }
+
+        /* Real-time indicator dot */
+        .real-time-dot::before {
+            content: '●';
+            display: inline-block;
+            color: #00D9FF;
+            animation: status-indicator 1s ease-in-out infinite;
+            margin-right: 0.5rem;
+        }
+
+        /* Smooth transitions for all interactive elements */
+        * {
+            transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #FF006E !important;
+            box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.1), 0 0 12px rgba(0, 217, 255, 0.2) !important;
+        }
+
+    </style>
+    <link rel="stylesheet" href="/static/css/serif-design-system.css">
+    <link rel="stylesheet" href="/static/css/advanced-design-system.css">
+    <link rel="stylesheet" href="/static/css/advanced-components.css">
+    <script defer src="/static/js/advanced-utilities.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📋 Health Records</h1>
+            <button class="back-btn" onclick="goBack()">← Back to Dashboard</button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="total-records">0</div>
+                <div class="stat-label">Total Records</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="this-month">0</div>
+                <div class="stat-label">This Month</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="avg-score">--</div>
+                <div class="stat-label">Avg Health Score</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <input type="date" class="filter-input" id="filter-date" placeholder="Filter by date">
+            <select class="filter-input" id="filter-type">
+                <option value="">All Record Types</option>
+                <option value="Vital">Vital Signs</option>
+                <option value="Lab">Lab Results</option>
+                <option value="Medical">Medical Report</option>
+            </select>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('timeline')">Timeline View</button>
+            <button class="tab-btn" onclick="switchTab('list')">List View</button>
+        </div>
+
+        <!-- Timeline Tab -->
+        <div id="timeline" class="tab-content active">
+            <div id="timeline-records" class="records-timeline">
+                <p style="color: #999; text-align: center; padding: 2rem;">Loading records...</p>
+            </div>
+        </div>
+
+        <!-- List Tab -->
+        <div id="list" class="tab-content">
+            <div id="list-records" class="records-list">
+                <p style="color: #999; text-align: center; padding: 2rem;">Loading records...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail View Modal -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📋 Health Record Details</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <p style="text-align: center; color: #666;">Loading details...</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-modal btn-modal-danger" onclick="deleteRecordFromModal()">Delete Record</button>
+                <button class="btn-modal btn-modal-primary" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            loadRecords();
+        });
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(tab).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function loadRecords() {
+            fetch('/api/health-records/vitals?limit=50')
+                .then(r => r.json())
+                .then(data => {
+                    const vitals = data.vitals || [];
+                    
+                    // Update stats
+                    updateStats(vitals);
+                    
+                    // Render timeline
+                    renderTimeline(vitals);
+                    
+                    // Render list
+                    renderList(vitals);
+                })
+                .catch(e => {
+                    console.error('Error loading records:', e);
+                    document.getElementById('timeline-records').innerHTML = 
+                        '<p style="color: #666; text-align: center; padding: 2rem;">Error loading records.</p>';
+                });
+        }
+
+        function updateStats(vitals) {
+            const now = new Date();
+            const currentMonth = vitals.filter(v => {
+                const date = new Date(v.recorded_at);
+                return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+            }).length;
+
+            document.getElementById('total-records').textContent = vitals.length;
+            document.getElementById('this-month').textContent = currentMonth;
+
+            if (vitals.length > 0) {
+                const avgScore = 65; // Default average
+                document.getElementById('avg-score').textContent = avgScore;
+            }
+        }
+
+        function renderTimeline(vitals) {
+            if (vitals.length === 0) {
+                document.getElementById('timeline-records').innerHTML = 
+                    '<div class="empty-state">No health records yet. Start recording your vitals!</div>';
+                return;
+            }
+
+            const timeline = vitals.slice(0, 15).map((vital, idx) => {
+                const date = new Date(vital.recorded_at);
+                return `
+                    <div class="record-item">
+                        <div class="record-date">${date.toLocaleDateString()}</div>
+                        <div class="record-dot"></div>
+                        <div class="record-card">
+                            <div class="record-title">
+                                📊 Vital Signs Check
+                                <span class="status-badge badge-normal">Latest</span>
+                            </div>
+                            <div class="record-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Heart Rate</span>
+                                    <div class="detail-value">${vital.heart_rate || '--'} bpm</div>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Blood Pressure</span>
+                                    <div class="detail-value">${vital.blood_pressure_systolic || '--'}/${vital.blood_pressure_diastolic || '--'}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Temperature</span>
+                                    <div class="detail-value">${vital.temperature || '--'} °C</div>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Oxygen Level</span>
+                                    <div class="detail-value">${vital.oxygen_level || '--'} %</div>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Blood Sugar</span>
+                                    <div class="detail-value">${vital.glucose || '--'} mg/dL</div>
+                                </div>
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <button class="btn btn-view" onclick="viewDetail(${vital.id})">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('timeline-records').innerHTML = timeline;
+        }
+
+        function renderList(vitals) {
+            if (vitals.length === 0) {
+                document.getElementById('list-records').innerHTML = 
+                    '<div class="empty-state">No health records yet. Start recording your vitals!</div>';
+                return;
+            }
+
+            const list = vitals.slice(0, 20).map(vital => {
+                const date = new Date(vital.recorded_at);
+                return `
+                    <div class="record-row">
+                        <div class="record-info">
+                            <h3>📊 Vital Signs Record</h3>
+                            <div class="record-meta">
+                                Recorded on ${date.toLocaleString()}
+                            </div>
+                            <div style="margin-top: 0.5rem;">
+                                HR: ${vital.heart_rate || '--'} | BP: ${vital.blood_pressure_systolic || '--'}/${vital.blood_pressure_diastolic || '--'} | O₂: ${vital.oxygen_level || '--'}%
+                            </div>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-view" onclick="viewDetail(${vital.id})">View</button>
+                            <button class="btn btn-delete" onclick="deleteRecord(${vital.id})">Delete</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('list-records').innerHTML = list;
+        }
+
+        function viewDetail(recordId) {
+            // Show modal
+            const modal = document.getElementById('detailModal');
+            modal.classList.add('active');
+            
+            // Store current record ID for delete action
+            modal.dataset.recordId = recordId;
+            
+            // Load details
+            fetch(`/api/health-records/vitals/${recordId}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        renderDetailModal(data.detail);
+                    } else {
+                        document.getElementById('modalBody').innerHTML = 
+                            `<p style="color: #dc3545; text-align: center;">Error: ${data.error}</p>`;
+                    }
+                })
+                .catch(e => {
+                    document.getElementById('modalBody').innerHTML = 
+                        `<p style="color: #dc3545; text-align: center;">Error loading details: ${e.message}</p>`;
+                });
+        }
+
+        function renderDetailModal(detail) {
+            const vital = detail.vital_record;
+            const patient = detail.patient_info;
+            const status = detail.health_status;
+            
+            const recordDate = new Date(vital.recorded_at);
+            
+            const modalContent = `
+                <!-- Patient Information Section -->
+                <div class="info-section">
+                    <h3>👤 Patient Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Full Name</div>
+                            <div class="info-value">${patient.name || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Age</div>
+                            <div class="info-value">${patient.age ? patient.age + ' years' : 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Gender</div>
+                            <div class="info-value">${patient.gender || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Blood Type</div>
+                            <div class="info-value">${patient.blood_type || 'Not recorded'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Phone</div>
+                            <div class="info-value">${patient.phone || 'Not provided'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Email</div>
+                            <div class="info-value">${patient.email || 'Not provided'}</div>
+                        </div>
+                    </div>
+                    ${patient.address ? `
+                        <div class="info-item" style="margin-top: 1rem;">
+                            <div class="info-label">Address</div>
+                            <div class="info-value">${patient.address}</div>
+                        </div>
+                    ` : ''}
+                    ${patient.allergies ? `
+                        <div class="info-item" style="margin-top: 1rem;">
+                            <div class="info-label">⚠️ Allergies</div>
+                            <div class="info-value" style="color: #dc3545;">${patient.allergies}</div>
+                        </div>
+                    ` : ''}
+                    ${patient.current_medications ? `
+                        <div class="info-item" style="margin-top: 1rem;">
+                            <div class="info-label">💊 Current Medications</div>
+                            <div class="info-value">${patient.current_medications}</div>
+                        </div>
+                    ` : ''}
+                    ${patient.medical_history ? `
+                        <div class="info-item" style="margin-top: 1rem;">
+                            <div class="info-label">📋 Medical History</div>
+                            <div class="info-value">${patient.medical_history}</div>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <!-- Vital Signs Section -->
+                <div class="info-section">
+                    <h3>📊 Vital Signs - ${recordDate.toLocaleString()}</h3>
+                    <div class="info-grid">
+                        ${vital.heart_rate ? `
+                            <div class="info-item">
+                                <div class="info-label">❤️ Heart Rate</div>
+                                <div class="info-value">${vital.heart_rate} bpm</div>
+                                <span class="status-indicator status-${status.heart_rate_status.status}">
+                                    ${status.heart_rate_status.message}
+                                </span>
+                            </div>
+                        ` : ''}
+                        
+                        ${vital.blood_pressure_systolic ? `
+                            <div class="info-item">
+                                <div class="info-label">🩸 Blood Pressure</div>
+                                <div class="info-value">${vital.blood_pressure_systolic}/${vital.blood_pressure_diastolic} mmHg</div>
+                                <span class="status-indicator status-${status.bp_status.status}">
+                                    ${status.bp_status.message}
+                                </span>
+                            </div>
+                        ` : ''}
+                        
+                        ${vital.temperature ? `
+                            <div class="info-item">
+                                <div class="info-label">🌡️ Temperature</div>
+                                <div class="info-value">${vital.temperature} °C</div>
+                                <span class="status-indicator status-${status.temp_status.status}">
+                                    ${status.temp_status.message}
+                                </span>
+                            </div>
+                        ` : ''}
+                        
+                        ${vital.oxygen_level ? `
+                            <div class="info-item">
+                                <div class="info-label">💨 Oxygen Level</div>
+                                <div class="info-value">${vital.oxygen_level} %</div>
+                                <span class="status-indicator status-${status.oxygen_status.status}">
+                                    ${status.oxygen_status.message}
+                                </span>
+                            </div>
+                        ` : ''}
+                        
+                        ${vital.glucose ? `
+                            <div class="info-item">
+                                <div class="info-label">🍬 Blood Glucose</div>
+                                <div class="info-value">${vital.glucose} mg/dL</div>
+                                <span class="status-indicator status-${status.glucose_status.status}">
+                                    ${status.glucose_status.message}
+                                </span>
+                            </div>
+                        ` : ''}
+                        
+                        ${vital.cholesterol ? `
+                            <div class="info-item">
+                                <div class="info-label">🧪 Cholesterol</div>
+                                <div class="info-value">${vital.cholesterol} mg/dL</div>
+                            </div>
+                        ` : ''}
+                        
+                        ${vital.weight ? `
+                            <div class="info-item">
+                                <div class="info-label">⚖️ Weight</div>
+                                <div class="info-value">${vital.weight} kg</div>
+                            </div>
+                        ` : ''}
+                        
+                        ${vital.height ? `
+                            <div class="info-item">
+                                <div class="info-label">📏 Height</div>
+                                <div class="info-value">${vital.height} cm</div>
+                            </div>
+                        ` : ''}
+                        
+                        ${vital.bmi ? `
+                            <div class="info-item">
+                                <div class="info-label">📊 BMI</div>
+                                <div class="info-value">${vital.bmi}</div>
+                                <span class="status-indicator status-${status.bmi_status.status}">
+                                    ${status.bmi_status.message}
+                                </span>
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    ${vital.notes ? `
+                        <div class="info-item" style="margin-top: 1rem;">
+                            <div class="info-label">📝 Additional Notes</div>
+                            <div class="info-value">${vital.notes}</div>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="info-item" style="margin-top: 1rem;">
+                        <div class="info-label">📅 Record Source</div>
+                        <div class="info-value">${vital.source || 'Manual entry'}</div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('modalBody').innerHTML = modalContent;
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+
+        function deleteRecordFromModal() {
+            const modal = document.getElementById('detailModal');
+            const recordId = modal.dataset.recordId;
+            
+            if (!recordId) return;
+            
+            if (confirm('Are you sure you want to delete this health record? This action cannot be undone.')) {
+                fetch(`/api/health-records/vitals/${recordId}`, {
+                    method: 'DELETE'
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('✅ Record deleted successfully!');
+                        closeModal();
+                        loadRecords(); // Reload the records list
+                    } else {
+                        alert('❌ Error: ' + data.error);
+                    }
+                })
+                .catch(e => {
+                    alert('❌ Error deleting record: ' + e.message);
+                });
+            }
+        }
+
+        function deleteRecord(recordId) {
+            if (!confirm('Are you sure you want to delete this record? This action cannot be undone.')) return;
+
+            fetch(`/api/health-records/vitals/${recordId}`, {
+                method: 'DELETE'
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ Record deleted successfully!');
+                    loadRecords();
+                } else {
+                    alert('❌ Error: ' + data.error);
+                }
+            })
+            .catch(e => alert('❌ Error: ' + e.message));
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('detailModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        function goBack() {
+            window.location.href = '/dashboard';
+        }
+    </script>
+</body>
+</html>

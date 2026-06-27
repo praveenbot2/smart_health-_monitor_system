@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vital Signs Management - Smart Health Monitor</title>
+    
+    <link rel="stylesheet" href="/static/css/advanced-design-system.css">
+    <link rel="stylesheet" href="/static/css/advanced-components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script defer src="/static/js/advanced-utilities.js"></script>
+    
+    <style>
+        * {
+            font-family: var(--serif-font-body, "Source Sans Pro", "Segoe UI", Arial, sans-serif);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            margin: 0;
+        }
+        
+        .container-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid var(--neutral-200);
+            box-shadow: var(--shadow-md);
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        
+        .sidebar-header {
+            padding: var(--spacing-xl);
+            border-bottom: 1px solid var(--neutral-200);
+            background: linear-gradient(135deg, var(--primary-50) 0%, white 100%);
+        }
+        
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            text-decoration: none;
+            color: var(--primary-600);
+            font-weight: 700;
+        }
+        
+        .sidebar-logo::before {
+            content: '💊';
+            font-size: 1.5rem;
+        }
+        
+        .sidebar-nav {
+            list-style: none;
+            padding: var(--spacing-lg) 0;
+        }
+        
+        .sidebar-nav li a {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md) var(--spacing-xl);
+            text-decoration: none;
+            color: var(--neutral-700);
+            transition: all var(--transition-fast);
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar-nav li a:hover,
+        .sidebar-nav li a.active {
+            background: var(--primary-50);
+            color: var(--primary-600);
+            border-left-color: var(--primary-600);
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: var(--spacing-2xl);
+        }
+        
+        .navbar {
+            background: white;
+            border-bottom: 1px solid var(--neutral-200);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-2xl);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .navbar-title h2 {
+            margin: 0;
+            color: var(--neutral-900);
+        }
+        
+        .breadcrumb-nav {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+            font-size: 0.95rem;
+            color: var(--neutral-600);
+        }
+        
+        .breadcrumb-nav a {
+            color: var(--primary-600);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+        
+        .breadcrumb-nav a:hover {
+            color: var(--primary-700);
+            text-decoration: underline;
+        }
+        
+        .content-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-2xl);
+        }
+        
+        .content-header h1 {
+            font-size: 2rem;
+            color: var(--neutral-900);
+            margin: 0;
+            position: relative;
+        }
+
+        .content-header h1::after {
+            content: "UI UPDATED";
+            display: inline-flex;
+            align-items: center;
+            margin-left: 0.7rem;
+            padding: 0.2rem 0.55rem;
+            border-radius: 999px;
+            font-size: 0.68rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #ffffff;
+            background: linear-gradient(90deg, #FF006E, #00D9FF, #FF006E);
+            background-size: 180% 100%;
+            animation: gradient-shift 1.3s linear infinite;
+            vertical-align: middle;
+            box-shadow: 0 8px 18px rgba(255, 0, 110, 0.26);
+        }
+        
+        .btn-add {
+            background: var(--serif-accent, #FF006E);
+            color: white;
+            padding: var(--spacing-md) var(--spacing-xl);
+            border: none;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            transition: all var(--transition-base);
+            box-shadow: 0 4px 15px rgba(255, 0, 110, 0.4);
+        }
+        
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 0, 110, 0.6);
+        }
+        
+        .filter-section {
+            background: white;
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-xl);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            gap: var(--spacing-lg);
+            align-items: flex-end;
+        }
+        
+        .form-group-inline {
+            flex: 1;
+        }
+        
+        .form-group-inline label {
+            display: block;
+            margin-bottom: var(--spacing-md);
+            font-weight: 600;
+            color: var(--neutral-700);
+        }
+        
+        .form-group-inline input,
+        .form-group-inline select {
+            width: 100%;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border: 2px solid var(--neutral-200);
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            transition: all var(--transition-base);
+        }
+        
+        .form-group-inline input:focus,
+        .form-group-inline select:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.1);
+        }
+        
+        .btn-filter {
+            background: var(--neutral-100);
+            color: var(--neutral-900);
+            padding: var(--spacing-md) var(--spacing-xl);
+            border: 2px solid var(--neutral-200);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all var(--transition-base);
+        }
+        
+        .btn-filter:hover {
+            background: var(--neutral-50);
+            border-color: var(--neutral-300);
+        }
+        
+        .vitals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: var(--spacing-xl);
+            margin-bottom: var(--spacing-2xl);
+        }
+        
+        .vital-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-slow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .vital-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.1) 0%, rgba(0, 217, 255, 0.05) 100%);
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+        }
+        
+        .vital-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+        
+        .vital-card-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .vital-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--neutral-100);
+        }
+        
+        .vital-card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--neutral-900);
+            margin: 0;
+        }
+        
+        .vital-card-icon {
+            font-size: 2rem;
+        }
+        
+        .vital-card-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-600);
+            margin: var(--spacing-lg) 0;
+        }
+        
+        .vital-card-unit {
+            font-size: 0.9rem;
+            color: var(--neutral-500);
+        }
+        
+        .vital-card-status {
+            display: inline-block;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: var(--spacing-lg);
+        }
+        
+        .status-normal {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-alert {
+            background: #fee2e2;
+            color: #7f1d1d;
+        }
+        
+        .chart-section {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--spacing-2xl);
+        }
+        
+        .chart-section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--neutral-900);
+            margin: 0 0 var(--spacing-xl) 0;
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--neutral-100);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 240px;
+            }
+            
+            .main-content {
+                margin-left: 240px;
+                padding: var(--spacing-lg);
+            }
+            
+            .vitals-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--spacing-lg);
+            }
+            
+            .filter-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .form-group-inline {
+                margin: 0;
+            }
+            
+            .btn-filter {
+                width: 100%;
+            }
+        }
+    
+        /* ===== REAL-TIME ANIMATIONS ===== */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 110, 0.3), 0 0 20px rgba(0, 217, 255, 0.2); }
+            50% { box-shadow: 0 0 20px rgba(255, 0, 110, 0.6), 0 0 30px rgba(0, 217, 255, 0.4); }
+        }
+
+        @keyframes slide-in-top {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slide-in-bottom {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fade-in-smooth {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes real-time-pulse {
+            0%, 100% { 
+                box-shadow: 0 0 8px rgba(255, 0, 110, 0.4), inset 0 0 8px rgba(0, 217, 255, 0.1);
+            }
+            50% { 
+                box-shadow: 0 0 16px rgba(255, 0, 110, 0.6), inset 0 0 12px rgba(0, 217, 255, 0.2);
+            }
+        }
+
+        @keyframes status-indicator {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Real-time enhanced styles */
+        .header {
+            animation: slide-in-top 0.6s ease-out;
+        }
+
+        .card, .alert-item, .event-card, .status-box, .metric-card {
+            animation: slide-in-bottom 0.5s ease-out backwards;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+        .card:nth-child(5) { animation-delay: 0.5s; }
+
+        .status-badge {
+            animation: real-time-pulse 1.5s ease-in-out infinite;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-badge.active {
+            background: rgba(0, 217, 255, 0.15);
+            border: 1px solid #00D9FF;
+            color: #00D9FF;
+        }
+
+        .status-badge.alert {
+            background: rgba(255, 0, 110, 0.15);
+            border: 1px solid #FF006E;
+            color: #FF006E;
+        }
+
+        .status-badge.warning {
+            background: rgba(255, 165, 0, 0.15);
+            border: 1px solid #FFA500;
+            color: #FFA500;
+        }
+
+        .button-group button, button.action-btn {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button-group button:hover, button.action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 0, 110, 0.3);
+        }
+
+        .button-group button:active, button.action-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Gradient backgrounds */
+        .gradient-card {
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.05) 0%, rgba(0, 217, 255, 0.05) 100%);
+            border: 1px solid rgba(255, 0, 110, 0.1);
+        }
+
+        .gradient-card:hover {
+            border-color: rgba(0, 217, 255, 0.3);
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.08) 0%, rgba(0, 217, 255, 0.08) 100%);
+        }
+
+        /* Real-time indicator dot */
+        .real-time-dot::before {
+            content: '●';
+            display: inline-block;
+            color: #00D9FF;
+            animation: status-indicator 1s ease-in-out infinite;
+            margin-right: 0.5rem;
+        }
+
+        /* Smooth transitions for all interactive elements */
+        * {
+            transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #FF006E !important;
+            box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.1), 0 0 12px rgba(0, 217, 255, 0.2) !important;
+        }
+
+    </style>
+    <link rel="stylesheet" href="/static/css/serif-design-system.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="#" class="sidebar-logo">Health Monitor</a>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <li><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="/vitals" class="active"><i class="fas fa-heartbeat"></i> Vitals</a></li>
+            <li><a href="/health-score"><i class="fas fa-chart-pie"></i> Health Score</a></li>
+            <li><a href="/reports"><i class="fas fa-file-alt"></i> Reports</a></li>
+            <li><a href="/predictions"><i class="fas fa-brain"></i> AI Predictions</a></li>
+            <li><a href="/appointments"><i class="fas fa-calendar"></i> Appointments</a></li>
+            <li><a href="/alerts"><i class="fas fa-bell"></i> Alerts</a></li>
+            <li><a href="/chatbot"><i class="fas fa-comments"></i> Health Assistant</a></li>
+        </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="breadcrumb-nav">
+            <a href="/dashboard">Dashboard</a>
+            <span>/</span>
+            <span>Vital Signs</span>
+        </div>
+        
+        <div class="content-header">
+            <h1>📊 Vital Signs Management</h1>
+            <button class="btn-add" onclick="showAddVitalModal()">
+                <i class="fas fa-plus"></i> Add Vital
+            </button>
+        </div>
+        
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="form-group-inline">
+                <label>Date Range</label>
+                <input type="date" id="startDate">
+            </div>
+            <div class="form-group-inline">
+                <label>To</label>
+                <input type="date" id="endDate">
+            </div>
+            <div class="form-group-inline">
+                <label>Vital Type</label>
+                <select>
+                    <option>All Vitals</option>
+                    <option>Heart Rate</option>
+                    <option>Blood Pressure</option>
+                    <option>Temperature</option>
+                    <option>Oxygen Level</option>
+                </select>
+            </div>
+            <button class="btn-filter">
+                <i class="fas fa-filter"></i> Filter
+            </button>
+        </div>
+        
+        <!-- Current Vitals Grid -->
+        <h2 style="color: var(--neutral-900); margin-bottom: var(--spacing-xl);">Current Vital Signs</h2>
+        <div class="vitals-grid">
+            <!-- Heart Rate Card -->
+            <div class="vital-card">
+                <div class="vital-card-content">
+                    <div class="vital-card-header">
+                        <h3 class="vital-card-title">Heart Rate</h3>
+                        <span class="vital-card-icon">❤️</span>
+                    </div>
+                    <p class="vital-card-value">72<span class="vital-card-unit"> bpm</span></p>
+                    <span class="vital-card-status status-normal">✓ Normal</span>
+                    <p style="margin-top: var(--spacing-lg); color: var(--neutral-500); font-size: 0.9rem;">
+                        Last recorded: Today at 10:30 AM
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Blood Pressure Card -->
+            <div class="vital-card">
+                <div class="vital-card-content">
+                    <div class="vital-card-header">
+                        <h3 class="vital-card-title">Blood Pressure</h3>
+                        <span class="vital-card-icon">🩸</span>
+                    </div>
+                    <p class="vital-card-value">120<span class="vital-card-unit">/80 mmHg</span></p>
+                    <span class="vital-card-status status-normal">✓ Optimal</span>
+                    <p style="margin-top: var(--spacing-lg); color: var(--neutral-500); font-size: 0.9rem;">
+                        Last recorded: Today at 10:30 AM
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Temperature Card -->
+            <div class="vital-card">
+                <div class="vital-card-content">
+                    <div class="vital-card-header">
+                        <h3 class="vital-card-title">Temperature</h3>
+                        <span class="vital-card-icon">🌡️</span>
+                    </div>
+                    <p class="vital-card-value">37.2<span class="vital-card-unit">°C</span></p>
+                    <span class="vital-card-status status-normal">✓ Normal</span>
+                    <p style="margin-top: var(--spacing-lg); color: var(--neutral-500); font-size: 0.9rem;">
+                        Last recorded: Today at 10:30 AM
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Oxygen Level Card -->
+            <div class="vital-card">
+                <div class="vital-card-content">
+                    <div class="vital-card-header">
+                        <h3 class="vital-card-title">Oxygen Level</h3>
+                        <span class="vital-card-icon">💨</span>
+                    </div>
+                    <p class="vital-card-value">98<span class="vital-card-unit">%</span></p>
+                    <span class="vital-card-status status-normal">✓ Excellent</span>
+                    <p style="margin-top: var(--spacing-lg); color: var(--neutral-500); font-size: 0.9rem;">
+                        Last recorded: Today at 10:30 AM
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- History Chart -->
+        <div class="chart-section">
+            <h3 class="chart-section-title">Heart Rate History (Last 7 Days)</h3>
+            <div class="chart-container">
+                <canvas id="heartRateHistoryChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Blood Pressure Chart -->
+        <div class="chart-section">
+            <h3 class="chart-section-title">Blood Pressure Trend</h3>
+            <div class="chart-container">
+                <canvas id="bloodPressureChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Heart Rate Chart
+        const ctx1 = document.getElementById('heartRateHistoryChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Heart Rate (bpm)',
+                    data: [68, 72, 71, 69, 75, 74, 72],
+                    borderColor: '#FF006E',
+                    backgroundColor: 'rgba(255, 0, 110, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#FF006E',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true }
+                },
+                scales: {
+                    y: { beginAtZero: false, min: 60, max: 85 }
+                }
+            }
+        });
+        
+        // Blood Pressure Chart
+        const ctx2 = document.getElementById('bloodPressureChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [
+                    {
+                        label: 'Systolic (mmHg)',
+                        data: [120, 119, 122, 118, 121, 120, 120],
+                        borderColor: '#FF006E',
+                        backgroundColor: 'rgba(255, 0, 110, 0.1)',
+                        tension: 0.4,
+                        fill: false,
+                        pointRadius: 5
+                    },
+                    {
+                        label: 'Diastolic (mmHg)',
+                        data: [80, 79, 81, 78, 80, 79, 80],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: false,
+                        pointRadius: 5
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true }
+                }
+            }
+        });
+        
+        function showAddVitalModal() {
+            ModalManager.show({
+                title: 'Record New Vital Sign',
+                content: `
+                    <div class="form-group">
+                        <label>Vital Type</label>
+                        <select style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px;">
+                            <option>Heart Rate</option>
+                            <option>Blood Pressure</option>
+                            <option>Temperature</option>
+                            <option>Oxygen Level</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Value</label>
+                        <input type="number" placeholder="Enter vital sign value" style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px;">
+                    </div>
+                    <div class="form-group">
+                        <label>Date & Time</label>
+                        <input type="datetime-local" style="width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px;">
+                    </div>
+                `,
+                buttons: [
+                    { label: 'Cancel', action: 'close', type: 'secondary' },
+                    { 
+                        label: 'Save Vital', 
+                        action: 'save', 
+                        type: 'primary',
+                        callback: () => notifyMgr.success('Vital sign recorded successfully!')
+                    }
+                ]
+            });
+        }
+    </script>
+</body>
+</html>

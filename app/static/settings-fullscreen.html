@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings - Smart Health Monitor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fff7fb;
+      --card: #ffffff;
+      --card-border: #f6d8e8;
+      --text: #5e2c47;
+      --muted: #91647d;
+      --accent: #e75490;
+      --accent-2: #ff7eb3;
+      --danger: #d92f6c;
+      --ok: #2e9b61;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      color-scheme: light;
+      font-family: var(--serif-font-body, "Source Sans Pro", "Segoe UI", Arial, sans-serif);
+      background: linear-gradient(135deg, rgba(5, 22, 48, 0.55) 0%, rgba(7, 51, 99, 0.32) 52%, rgba(8, 15, 36, 0.5) 100%), url('/static/images/module-bg.avif');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .header h1 {
+      color: var(--accent);
+      font-size: 2rem;
+    }
+
+    .sub {
+      color: var(--muted);
+      margin-top: 0.25rem;
+      font-size: 0.95rem;
+    }
+
+    .btn {
+      border: 1px solid var(--card-border);
+      background: #ffe8f4;
+      color: var(--text);
+      padding: 0.7rem 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      border: none;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+    }
+
+    .btn-danger {
+      border: none;
+      color: #fff;
+      background: linear-gradient(135deg, #ef5b8d, var(--danger));
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 1rem;
+    }
+
+    .card {
+      grid-column: span 12;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1rem;
+      box-shadow: 0 8px 22px rgba(231, 84, 144, 0.08);
+    }
+
+    .card h2 {
+      font-size: 1.1rem;
+      margin-bottom: 0.85rem;
+      color: #8e3f65;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.8rem;
+    }
+
+    label { font-size: 0.88rem; color: var(--muted); }
+
+    input, select {
+      width: 100%;
+      margin-top: 0.2rem;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 0.65rem 0.7rem;
+      color: var(--text);
+      background: #fff;
+      font-family: inherit;
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.6rem;
+      margin-top: 0.9rem;
+      flex-wrap: wrap;
+    }
+
+    .switches {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .switch {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 0.6rem 0.8rem;
+      background: #fff;
+    }
+
+    .switch span { color: var(--text); font-size: 0.92rem; }
+
+    .switch input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      margin-top: 0;
+    }
+
+    .notice {
+      margin-top: 0.8rem;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .status {
+      margin-top: 0.8rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      min-height: 1.2rem;
+    }
+
+    .status.ok { color: var(--ok); }
+    .status.err { color: var(--danger); }
+
+    @media (min-width: 900px) {
+      .col-6 { grid-column: span 6; }
+    }
+
+    @media (max-width: 720px) {
+      body { color-scheme: light; padding: 1rem; }
+      .row { grid-template-columns: 1fr; }
+    }
+  
+        /* ===== REAL-TIME ANIMATIONS ===== */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 110, 0.3), 0 0 20px rgba(0, 217, 255, 0.2); }
+            50% { box-shadow: 0 0 20px rgba(255, 0, 110, 0.6), 0 0 30px rgba(0, 217, 255, 0.4); }
+        }
+
+        @keyframes slide-in-top {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slide-in-bottom {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fade-in-smooth {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes real-time-pulse {
+            0%, 100% { 
+                box-shadow: 0 0 8px rgba(255, 0, 110, 0.4), inset 0 0 8px rgba(0, 217, 255, 0.1);
+            }
+            50% { 
+                box-shadow: 0 0 16px rgba(255, 0, 110, 0.6), inset 0 0 12px rgba(0, 217, 255, 0.2);
+            }
+        }
+
+        @keyframes status-indicator {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Real-time enhanced styles */
+        .header {
+            animation: slide-in-top 0.6s ease-out;
+        }
+
+        .card, .alert-item, .event-card, .status-box, .metric-card {
+            animation: slide-in-bottom 0.5s ease-out backwards;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+        .card:nth-child(5) { animation-delay: 0.5s; }
+
+        .status-badge {
+            animation: real-time-pulse 1.5s ease-in-out infinite;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-badge.active {
+            background: rgba(0, 217, 255, 0.15);
+            border: 1px solid #00D9FF;
+            color: #00D9FF;
+        }
+
+        .status-badge.alert {
+            background: rgba(255, 0, 110, 0.15);
+            border: 1px solid #FF006E;
+            color: #FF006E;
+        }
+
+        .status-badge.warning {
+            background: rgba(255, 165, 0, 0.15);
+            border: 1px solid #FFA500;
+            color: #FFA500;
+        }
+
+        .button-group button, button.action-btn {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button-group button:hover, button.action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 0, 110, 0.3);
+        }
+
+        .button-group button:active, button.action-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Gradient backgrounds */
+        .gradient-card {
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.05) 0%, rgba(0, 217, 255, 0.05) 100%);
+            border: 1px solid rgba(255, 0, 110, 0.1);
+        }
+
+        .gradient-card:hover {
+            border-color: rgba(0, 217, 255, 0.3);
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.08) 0%, rgba(0, 217, 255, 0.08) 100%);
+        }
+
+        /* Real-time indicator dot */
+        .real-time-dot::before {
+            content: '●';
+            display: inline-block;
+            color: #00D9FF;
+            animation: status-indicator 1s ease-in-out infinite;
+            margin-right: 0.5rem;
+        }
+
+        /* Smooth transitions for all interactive elements */
+        * {
+            transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #FF006E !important;
+            box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.1), 0 0 12px rgba(0, 217, 255, 0.2) !important;
+        }
+
+    </style>
+    <link rel="stylesheet" href="/static/css/serif-design-system.css">
+    <link rel="stylesheet" href="/static/css/advanced-design-system.css">
+    <link rel="stylesheet" href="/static/css/advanced-components.css">
+    <script defer src="/static/js/advanced-utilities.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1>⚙️ Settings</h1>
+        <p class="sub">Manage profile, password, notification preferences, privacy settings, and data export.</p>
+      </div>
+      <button class="btn" onclick="window.location.href='/dashboard'">← Back to Dashboard</button>
+    </div>
+
+    <div class="grid">
+      <section class="card col-6">
+        <h2>👤 Profile</h2>
+        <div class="row">
+          <label>Full Name
+            <input id="full_name" type="text" />
+          </label>
+          <label>Email
+            <input id="email" type="email" />
+          </label>
+          <label>Phone
+            <input id="phone" type="text" />
+          </label>
+          <label>Gender
+            <select id="gender">
+              <option value="">Select</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+        </div>
+        <label style="display:block; margin-top:0.8rem;">Address
+          <input id="address" type="text" />
+        </label>
+        <div class="actions">
+          <button class="btn btn-primary" onclick="saveProfile()">Save Profile</button>
+        </div>
+      </section>
+
+      <section class="card col-6">
+        <h2>🔒 Password</h2>
+        <div class="row">
+          <label>Current Password
+            <input id="current_password" type="password" />
+          </label>
+          <label>New Password
+            <input id="new_password" type="password" />
+          </label>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" onclick="changePassword()">Change Password</button>
+        </div>
+      </section>
+
+      <section class="card col-6">
+        <h2>🔔 Notification Preferences</h2>
+        <div class="switches">
+          <label class="switch"><span>Email Notifications</span><input id="email_notifications" type="checkbox" /></label>
+          <label class="switch"><span>SMS Notifications</span><input id="sms_notifications" type="checkbox" /></label>
+          <label class="switch"><span>Push Notifications</span><input id="push_notifications" type="checkbox" /></label>
+        </div>
+      </section>
+
+      <section class="card col-6">
+        <h2>🛡️ Privacy Settings</h2>
+        <label>Profile Visibility
+          <select id="profile_visibility">
+            <option value="private">Private</option>
+            <option value="care_team">Care Team</option>
+            <option value="public">Public</option>
+          </select>
+        </label>
+        <div class="switches" style="margin-top:0.7rem;">
+          <label class="switch"><span>Share anonymized data for research</span><input id="share_anonymized_data" type="checkbox" /></label>
+          <label class="switch"><span>Allow family access</span><input id="allow_family_access" type="checkbox" /></label>
+          <label class="switch"><span>Allow data export</span><input id="data_export_consent" type="checkbox" /></label>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" onclick="savePreferences()">Save Preferences</button>
+        </div>
+      </section>
+
+      <section class="card gradient-card">
+        <h2>📦 Data Export</h2>
+        <p class="notice">Download your account and health data as a JSON file.</p>
+        <div class="actions">
+          <button class="btn btn-primary" onclick="exportData()">Export My Data</button>
+          <button class="btn btn-danger" onclick="window.alert('Account deletion flow not implemented yet.')">Delete Account (Coming soon)</button>
+        </div>
+      </section>
+    </div>
+
+    <div id="status" class="status"></div>
+  </div>
+
+  <script>
+    function setStatus(message, ok = true) {
+      const el = document.getElementById('status');
+      el.textContent = message;
+      el.className = `status ${ok ? 'ok' : 'err'}`;
+      setTimeout(() => { el.textContent = ''; }, 4000);
+    }
+
+    async function api(url, options = {}) {
+      const res = await fetch(url, {
+        headers: { 'Content-Type': 'application/json' },
+        ...options
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || data.message || 'Request failed');
+      return data;
+    }
+
+    function fillProfile(user = {}) {
+      document.getElementById('full_name').value = user.full_name || '';
+      document.getElementById('email').value = user.email || '';
+      document.getElementById('phone').value = user.phone || '';
+      document.getElementById('gender').value = user.gender || '';
+      document.getElementById('address').value = user.address || '';
+    }
+
+    function fillPreferences(p = {}) {
+      document.getElementById('email_notifications').checked = !!p.email_notifications;
+      document.getElementById('sms_notifications').checked = !!p.sms_notifications;
+      document.getElementById('push_notifications').checked = !!p.push_notifications;
+      document.getElementById('profile_visibility').value = p.profile_visibility || 'private';
+      document.getElementById('share_anonymized_data').checked = !!p.share_anonymized_data;
+      document.getElementById('allow_family_access').checked = p.allow_family_access !== false;
+      document.getElementById('data_export_consent').checked = p.data_export_consent !== false;
+    }
+
+    async function loadSettings() {
+      try {
+        const [profileRes, prefRes] = await Promise.all([
+          api('/api/auth/profile'),
+          api('/api/auth/preferences')
+        ]);
+        fillProfile(profileRes.user || {});
+        fillPreferences(prefRes.preferences || {});
+      } catch (err) {
+        setStatus(err.message, false);
+      }
+    }
+
+    async function saveProfile() {
+      try {
+        const payload = {
+          full_name: document.getElementById('full_name').value,
+          email: document.getElementById('email').value,
+          phone: document.getElementById('phone').value,
+          gender: document.getElementById('gender').value,
+          address: document.getElementById('address').value
+        };
+        await api('/api/auth/profile', { method: 'PUT', body: JSON.stringify(payload) });
+        setStatus('Profile saved successfully.');
+      } catch (err) {
+        setStatus(err.message, false);
+      }
+    }
+
+    async function changePassword() {
+      try {
+        const payload = {
+          current_password: document.getElementById('current_password').value,
+          new_password: document.getElementById('new_password').value
+        };
+        await api('/api/auth/change-password', { method: 'POST', body: JSON.stringify(payload) });
+        document.getElementById('current_password').value = '';
+        document.getElementById('new_password').value = '';
+        setStatus('Password changed successfully.');
+      } catch (err) {
+        setStatus(err.message, false);
+      }
+    }
+
+    async function savePreferences() {
+      try {
+        const payload = {
+          email_notifications: document.getElementById('email_notifications').checked,
+          sms_notifications: document.getElementById('sms_notifications').checked,
+          push_notifications: document.getElementById('push_notifications').checked,
+          profile_visibility: document.getElementById('profile_visibility').value,
+          share_anonymized_data: document.getElementById('share_anonymized_data').checked,
+          allow_family_access: document.getElementById('allow_family_access').checked,
+          data_export_consent: document.getElementById('data_export_consent').checked
+        };
+        await api('/api/auth/preferences', { method: 'PUT', body: JSON.stringify(payload) });
+        setStatus('Preferences saved successfully.');
+      } catch (err) {
+        setStatus(err.message, false);
+      }
+    }
+
+    async function exportData() {
+      try {
+        const response = await fetch('/api/auth/export-data');
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}));
+          throw new Error(data.error || 'Export failed');
+        }
+
+        const blob = await response.blob();
+        const cd = response.headers.get('Content-Disposition') || '';
+        const fileNameMatch = cd.match(/filename=([^;]+)/i);
+        const fileName = fileNameMatch ? fileNameMatch[1] : 'smart-health-export.json';
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+
+        setStatus('Data export downloaded successfully.');
+      } catch (err) {
+        setStatus(err.message, false);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadSettings);
+  </script>
+</body>
+</html>
